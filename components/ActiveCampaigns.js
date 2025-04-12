@@ -11,7 +11,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import API_BASE_URL from '../config'
 import axios from "axios";
 
-
 const ActiveGroupDealStory = () => {
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);

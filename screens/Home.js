@@ -11,14 +11,17 @@ import CategoriesHome from "../components/Categories_home";
 const HomePage = () => {
     const navigation = useNavigation();
     return (
+        <>
+        <Header navigation={navigation} />
         <ScrollView>
             <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-            <Header navigation={navigation} />
+            
             <ActiveCampaigns />
             <CarouselHomePage data={data} />
-            <CategoriesHome />
+            <CategoriesHome navigation={navigation} />
             {/* <ProductItem /> */}
         </ScrollView>
+        </>
         
     );
 };

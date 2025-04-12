@@ -15,10 +15,12 @@ import API_BASE_URL from "../config";
 
 const { width } = Dimensions.get("window");
 
-const ProductItem = ({ navigation }) => {
+const ProductItem = ({ navigation, categoryId, categoryName }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -27,6 +29,7 @@ const ProductItem = ({ navigation }) => {
         const response = await axios.get(`${API_BASE_URL}/products/`);
         // console.log("Fetched products:", response.data);
         setProducts(response.data);
+        setFilteredProducts(response.data); 
         setError(null);
       } catch (err) {
         setError("Failed to load products");
@@ -39,8 +42,23 @@ const ProductItem = ({ navigation }) => {
     loadProducts();
   }, []);
 
+  useEffect(() => {
+    if (!products.length) return;
+    if (categoryId) {
+      // console.log("category name:#########:",categoryName)
+      const filtered = products.filter((p) => Number(p.category) === Number(categoryId));
+      setFilteredProducts(filtered);
+      setShowAll(false)
+    } else {
+      setFilteredProducts(products);
+      // console.log("filtered Products:", filteredProducts)
+    }
+  }, [categoryId, products]);
+
   const handleViewAll = () => {
-    navigation?.navigate("AllProducts");
+    const filtered = [...products]
+    setFilteredProducts(filtered)
+    setShowAll(true);
   };
 
   const handleProductPress = (product) => {
@@ -133,7 +151,6 @@ const ProductItem = ({ navigation }) => {
         <Text style={styles.minOrderText}>
         Campaign Price:{parseFloat(calculateCampaignPrice(item.variants[0].price, item.variants[0].campaign_discount_percentage)).toFixed(3)} KD
 
-
         </Text>
 
         {/* <TouchableOpacity
@@ -168,15 +185,21 @@ const ProductItem = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <Text style={styles.headerTitle}>Popular Products</Text>
-        <TouchableOpacity onPress={handleViewAll} style={styles.viewAllButton}>
-          <Text style={styles.viewAllText}>View All</Text>
+      <Text style={styles.headerTitle}>
+        {categoryId && !showAll ? categoryName : "All Products"}
+      </Text>
+
+        <TouchableOpacity  onPress={() => handleViewAll()} style={styles.viewAllButton}>
+        <Text style={styles.viewAllText}>
+          View All
+        </Text>
+
           <AntDesign name="right" size={16} color="#0066CC" />
         </TouchableOpacity>
       </View>
 
       <FlatList
-        data={products}
+        data={filteredProducts}
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
         numColumns={numColumns}

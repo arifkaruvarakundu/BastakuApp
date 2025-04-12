@@ -53,16 +53,19 @@ const CategoriesHome = ({ navigation, fetchCategories }) => {
   };
 
   const handleCategoryPress = (category) => {
-    // Navigate to the seller detail screen
     if (navigation) {
-      navigation.navigate("CategoryDetail", { categoryId: category.id });
+      console.log("category clicked:", category)
+      navigation.navigate("Shop", {
+        categoryId: category.id,
+        categoryName: category.name,
+      });
     }
   };
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.sellerContainer}
-      onPress={() => handleSCategoryPress(item)}
+      onPress={() => handleCategoryPress(item)}
       activeOpacity={0.7}
     >
       <View style={styles.imageContainer}>

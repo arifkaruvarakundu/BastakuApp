@@ -15,7 +15,7 @@ import API_BASE_URL from "../config"
 
 const { width } = Dimensions.get("window");
 
-const CategoriesShop = ({ navigation, fetchCategories }) => {
+const CategoriesShop = ({ navigation, fetchCategories, onCategorySelect }) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -54,15 +54,16 @@ const CategoriesShop = ({ navigation, fetchCategories }) => {
 
   const handleCategoryPress = (category) => {
     // Navigate to the seller detail screen
-    if (navigation) {
-      navigation.navigate("CategoryDetail", { categoryId: category.id });
+    if (onCategorySelect) {
+      onCategorySelect(category.id, category.name)
+      
     }
   };
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.sellerContainer}
-      onPress={() => handleSCategoryPress(item)}
+      onPress={() => handleCategoryPress(item)}
       activeOpacity={0.7}
     >
       <View style={styles.imageContainer}>
