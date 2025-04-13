@@ -12,6 +12,7 @@ import {
 import { AntDesign } from "@expo/vector-icons";
 import axios from "axios";
 import API_BASE_URL from "../config";
+import {useSelector} from 'react-redux';
 
 const { width } = Dimensions.get("window");
 
@@ -21,6 +22,8 @@ const ProductItem = ({ navigation, categoryId, categoryName }) => {
   const [error, setError] = useState(null);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [showAll, setShowAll] = useState(false);
+  const [cartItems, setCartItems] = useState({});
+  const [showCartSummary, setShowCartSummary] = useState(false);
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -42,6 +45,48 @@ const ProductItem = ({ navigation, categoryId, categoryName }) => {
     loadProducts();
   }, []);
 
+  const handleAddToCart = (product) => {
+    const id = product.id;
+    setCartItems((prev) => ({
+      ...prev,
+      [id]: {
+        ...product,
+        quantity: 1
+      }
+    }));
+    setShowCartSummary(true);
+  };
+
+  const handleIncrease = (productId) => {
+    setCartItems((prev) => ({
+      ...prev,
+      [productId]: {
+        ...prev[productId],
+        quantity: prev[productId].quantity + 1
+      }
+    }));
+  };
+  
+  const handleDecrease = (productId) => {
+    setCartItems((prev) => {
+      const updated = { ...prev };
+      if (updated[productId].quantity > 1) {
+        updated[productId].quantity -= 1;
+      } else {
+        delete updated[productId];
+      }
+      return updated;
+    });
+  };
+
+  useEffect(() => {
+    if (categoryId || categoryName) {
+      console.log("Received from Shop page:", categoryId, categoryName);
+    } else {
+      console.log("No category received from Shop page");
+    }
+  }, [categoryId, categoryName]);
+
   useEffect(() => {
     if (!products.length) return;
     if (categoryId) {
@@ -62,7 +107,11 @@ const ProductItem = ({ navigation, categoryId, categoryName }) => {
   };
 
   const handleProductPress = (product) => {
-    navigation?.navigate("ProductDetail", { productId: product.id });
+    navigation.navigate('HomeTab', {
+      screen: 'ProductDetails',
+      params: { productId: product.id }
+    });
+    
   };
 
   // const handleJoinGroup = (id) => {
@@ -108,20 +157,48 @@ const ProductItem = ({ navigation, categoryId, categoryName }) => {
           resizeMode="cover"
         />
         <View style={styles.discountBadge}>
-          <Text style={styles.discountText}>
-            % OFF
-          </Text>
+        <Text style={styles.discountText}>
+          {item.variants[0].campaign_discount_percentage}% OFF
+        </Text>
         </View>
       </View>
 
+      {!cartItems[item.id] ? (
+        <TouchableOpacity
+          style={styles.addToCartButton}
+          onPress={() => handleAddToCart(item)}
+        >
+          <AntDesign name="pluscircle" size={24} color="#499c5d" />
+        </TouchableOpacity>
+      ) : (
+        <View style={styles.quantityControl}>
+          <TouchableOpacity onPress={() => handleDecrease(item.id)}>
+            <AntDesign name="minuscircleo" size={24} color="#499c5d" />
+          </TouchableOpacity>
+          <Text style={{ 
+            marginHorizontal: 10, 
+            fontSize: 16, 
+            fontWeight: "bold", 
+            color: "#333", 
+            minWidth: 20, 
+            textAlign: "center" 
+          }}>
+            {cartItems[item.id]?.quantity || 1}
+          </Text>
+          <TouchableOpacity onPress={() => handleIncrease(item.id)}>
+            <AntDesign name="pluscircleo" size={24} color="#499c5d" />
+          </TouchableOpacity>
+        </View>
+      )}
+
       <View style={styles.detailsContainer}>
         <Text style={styles.productName} numberOfLines={2}>
-          {item.productName}
+          {item.product_name}
         </Text>
 
         <View style={styles.priceContainer}>
           <Text style={styles.campaignPrice}>KD: {parseFloat(item.variants[0].price).toFixed(3)}</Text>
-          <Text style={styles.actualPrice}></Text>
+          {/* <Text style={styles.actualPrice}></Text> */}
         </View>
 
         {/* <View style={styles.progressContainer}>
@@ -149,8 +226,7 @@ const ProductItem = ({ navigation, categoryId, categoryName }) => {
         </View> */}
 
         <Text style={styles.minOrderText}>
-        Campaign Price:{parseFloat(calculateCampaignPrice(item.variants[0].price, item.variants[0].campaign_discount_percentage)).toFixed(3)} KD
-
+          Campaign Price:{parseFloat(calculateCampaignPrice(item.variants[0].price, item.variants[0].campaign_discount_percentage)).toFixed(3)} KD
         </Text>
 
         {/* <TouchableOpacity
@@ -189,7 +265,11 @@ const ProductItem = ({ navigation, categoryId, categoryName }) => {
         {categoryId && !showAll ? categoryName : "All Products"}
       </Text>
 
-        <TouchableOpacity  onPress={() => handleViewAll()} style={styles.viewAllButton}>
+      <TouchableOpacity
+          onPress={handleViewAll}
+          disabled={showAll}
+          style={[styles.viewAllButton, showAll && { opacity: 0.5 }]}
+        >
         <Text style={styles.viewAllText}>
           View All
         </Text>
@@ -207,6 +287,31 @@ const ProductItem = ({ navigation, categoryId, categoryName }) => {
         scrollEnabled={false}
         contentContainerStyle={styles.gridContent}
       />
+
+        {showCartSummary && Object.keys(cartItems).length > 0 && (
+          <View style={styles.cartSummary}>
+            <Text style={styles.cartText}>
+              {Object.values(cartItems).reduce((sum, item) => sum + item.quantity, 0)} item(s) | Total: KD{" "}
+              {Object.values(cartItems)
+                .reduce(
+                  (sum, item) =>
+                    sum +
+                    item.quantity *
+                      (item.variants[0].price -
+                        (item.variants[0].price *
+                          item.variants[0].campaign_discount_percentage) /
+                          100),
+                  0
+                )
+                .toFixed(3)}
+            </Text>
+
+            <TouchableOpacity style={styles.viewCartButton}>
+              <Text style={styles.viewCartText}>View Cart</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
     </View>
   );
 };
@@ -363,6 +468,69 @@ const styles = StyleSheet.create({
   errorText: {
     color: "red",
   },
+  addToCartButton: {
+    position: "absolute",
+    top: 80,
+    right: 5,
+    backgroundColor: "white",
+    borderRadius: 12,
+    padding: 2,
+    zIndex: 5,
+  },
+  quantityControl: {
+    position: "absolute",
+    top: 80,
+    right: 5,
+    backgroundColor: "white",
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 6   
+    
+    ,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    zIndex: 5,
+    width: 110, // adjust for spacing if needed
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 3,
+  },  
+  
+  cartSummary: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "#fff",
+    padding: 10,
+    borderTopWidth: 1,
+    borderColor: "#ddd",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    elevation: 10,
+  },
+  
+  cartText: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  
+  viewCartButton: {
+    backgroundColor: "#499c5d",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  
+  viewCartText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  
 });
 
 export default ProductItem;
