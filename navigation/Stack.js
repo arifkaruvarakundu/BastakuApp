@@ -1,30 +1,38 @@
+// Stack.js
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomePage from '../screens/Home';
-// import SignUp from '../screens/SignUp'; // or wherever your signup screen is
-// import shop from '../screens/shop'
-import ProductDetailView from '../screens/Product_details'
-
+import Shop from '../screens/shop';
+import ProductDetailView from '../screens/Product_details';
 
 const Stack = createNativeStackNavigator();
 
-const HomeStackNavigator = () => {
-    return (
-      <Stack.Navigator>
-        {/* HomePage will have no header because we use the custom header with Drawer Toggle */}
-        <Stack.Screen 
-          name="Home" 
-          component={HomePage} 
-          options={{
-            headerShown: false, // Hide header for this screen as Header component is used
-          }} 
-        />
-        {/* <Stack.Screen name="SignUp" component={SignUp} /> */}
-        <Stack.Screen name="ProductDetails" component={ProductDetailView} />
-        {/* <Stack.Screen name="shop" component = {Shop} /> */}
-        
-      </Stack.Navigator>
-    );
-  };
+// Home Stack
+export const HomeStackNavigator = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen 
+        name="Home" 
+        component={HomePage} 
+        options={{ headerShown: false }} 
+      />
+    </Stack.Navigator>
+  );
+};
 
-export default HomeStackNavigator;
+// Shop Stack
+export const ShopStackNavigator = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen 
+        name="shop" 
+        component={Shop} 
+        options={{ headerShown: false }} 
+      />
+      <Stack.Screen 
+        name="ProductDetails" 
+        component={ProductDetailView} 
+      />
+    </Stack.Navigator>
+  );
+};

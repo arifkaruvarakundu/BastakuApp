@@ -53,9 +53,12 @@ const CategoriesHome = ({ navigation, fetchCategories, onCategorySelect }) => {
   };
 
   const handleCategoryPress = (category) => {
-    navigation.navigate("Shop", {
-      categoryId: category.id,
-      categoryName: category.name,
+    navigation.navigate("ShopTab", {
+      screen: 'shop',
+      params: {
+        categoryId: category.id,
+        categoryName: category.name,
+      },
     });
   };
   
@@ -107,7 +110,7 @@ const CategoriesHome = ({ navigation, fetchCategories, onCategorySelect }) => {
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <Text style={styles.headerTitle}>Featured Categories</Text>
+        <Text style={styles.headerTitle}>Categories</Text>
         <TouchableOpacity onPress={handleViewAll} style={styles.viewAllButton}>
           <Text style={styles.viewAllText}>More</Text>
           <AntDesign name="right" size={16} color="#b6e4af" />

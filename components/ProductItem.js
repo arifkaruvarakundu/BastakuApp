@@ -12,7 +12,8 @@ import {
 import { AntDesign } from "@expo/vector-icons";
 import axios from "axios";
 import API_BASE_URL from "../config";
-import {useSelector} from 'react-redux';
+// import {useSelector, useDispatch} from 'react-redux';
+import { addToCart, removeFromCart, updateCartItemQuantity } from '../redux/cartSlice';
 
 const { width } = Dimensions.get("window");
 
@@ -22,8 +23,9 @@ const ProductItem = ({ navigation, categoryId, categoryName }) => {
   const [error, setError] = useState(null);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [showAll, setShowAll] = useState(false);
-  const [cartItems, setCartItems] = useState({});
-  const [showCartSummary, setShowCartSummary] = useState(false);
+  // const [cartItems, setCartItems] = useState({});
+  const [localQuantities, setLocalQuantities] = useState({});
+
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -45,40 +47,33 @@ const ProductItem = ({ navigation, categoryId, categoryName }) => {
     loadProducts();
   }, []);
 
-  const handleAddToCart = (product) => {
-    const id = product.id;
-    setCartItems((prev) => ({
-      ...prev,
-      [id]: {
-        ...product,
-        quantity: 1
-      }
-    }));
-    setShowCartSummary(true);
-  };
+  // const handleAddToCart = (product) => {
+  //   dispatch(addToCart({ ...product, quantity: 1 }));
+  // };
 
   const handleIncrease = (productId) => {
-    setCartItems((prev) => ({
+    setLocalQuantities(prev => ({
       ...prev,
-      [productId]: {
-        ...prev[productId],
-        quantity: prev[productId].quantity + 1
-      }
+      [productId]: (prev[productId] || 1) + 1
     }));
   };
   
   const handleDecrease = (productId) => {
-    setCartItems((prev) => {
-      const updated = { ...prev };
-      if (updated[productId].quantity > 1) {
-        updated[productId].quantity -= 1;
+    setLocalQuantities(prev => {
+      const currentQty = prev[productId] || 1;
+      if (currentQty > 1) {
+        return {
+          ...prev,
+          [productId]: currentQty - 1
+        };
       } else {
+        const updated = { ...prev };
         delete updated[productId];
+        return updated;
       }
-      return updated;
     });
   };
-
+  
   useEffect(() => {
     if (categoryId || categoryName) {
       console.log("Received from Shop page:", categoryId, categoryName);
@@ -107,11 +102,11 @@ const ProductItem = ({ navigation, categoryId, categoryName }) => {
   };
 
   const handleProductPress = (product) => {
-    navigation.navigate('HomeTab', {
-      screen: 'ProductDetails',
-      params: { productId: product.id }
+    const quantity = localQuantities[product.id] || 1;
+    navigation.navigate('ProductDetails', {
+      productId: product.id,
+      quantity,
     });
-    
   };
 
   // const handleJoinGroup = (id) => {
@@ -163,10 +158,10 @@ const ProductItem = ({ navigation, categoryId, categoryName }) => {
         </View>
       </View>
 
-      {!cartItems[item.id] ? (
+      {!localQuantities[item.id] ? (
         <TouchableOpacity
           style={styles.addToCartButton}
-          onPress={() => handleAddToCart(item)}
+          onPress={() => handleIncrease(item.id)}
         >
           <AntDesign name="pluscircle" size={24} color="#499c5d" />
         </TouchableOpacity>
@@ -175,15 +170,15 @@ const ProductItem = ({ navigation, categoryId, categoryName }) => {
           <TouchableOpacity onPress={() => handleDecrease(item.id)}>
             <AntDesign name="minuscircleo" size={24} color="#499c5d" />
           </TouchableOpacity>
-          <Text style={{ 
-            marginHorizontal: 10, 
-            fontSize: 16, 
-            fontWeight: "bold", 
-            color: "#333", 
-            minWidth: 20, 
-            textAlign: "center" 
+          <Text style={{
+            marginHorizontal: 10,
+            fontSize: 16,
+            fontWeight: "bold",
+            color: "#333",
+            minWidth: 20,
+            textAlign: "center"
           }}>
-            {cartItems[item.id]?.quantity || 1}
+            {localQuantities[item.id]}
           </Text>
           <TouchableOpacity onPress={() => handleIncrease(item.id)}>
             <AntDesign name="pluscircleo" size={24} color="#499c5d" />
@@ -288,30 +283,7 @@ const ProductItem = ({ navigation, categoryId, categoryName }) => {
         contentContainerStyle={styles.gridContent}
       />
 
-        {showCartSummary && Object.keys(cartItems).length > 0 && (
-          <View style={styles.cartSummary}>
-            <Text style={styles.cartText}>
-              {Object.values(cartItems).reduce((sum, item) => sum + item.quantity, 0)} item(s) | Total: KD{" "}
-              {Object.values(cartItems)
-                .reduce(
-                  (sum, item) =>
-                    sum +
-                    item.quantity *
-                      (item.variants[0].price -
-                        (item.variants[0].price *
-                          item.variants[0].campaign_discount_percentage) /
-                          100),
-                  0
-                )
-                .toFixed(3)}
-            </Text>
-
-            <TouchableOpacity style={styles.viewCartButton}>
-              <Text style={styles.viewCartText}>View Cart</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
+        
     </View>
   );
 };
@@ -472,7 +444,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 80,
     right: 5,
-    backgroundColor: "white",
+    backgroundColor: "#a8d5ba",
     borderRadius: 12,
     padding: 2,
     zIndex: 5,

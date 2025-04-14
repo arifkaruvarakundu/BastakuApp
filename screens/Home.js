@@ -1,29 +1,34 @@
-import { ScrollView } from 'react-native';
-import ActiveCampaigns from "../components/ActiveCampaigns"
-import Header from "../components/Header"
+import React from 'react';
+import { FlatList, StatusBar } from 'react-native';
+import ActiveCampaigns from "../components/ActiveCampaigns";
+import Header from "../components/Header";
 import { useNavigation } from '@react-navigation/native';
-import { View, Text, StatusBar } from 'react-native';
 import CarouselHomePage from "../components/Carousel_home";
-import {CaurousalData as data} from "../utils/CarouselData"
+import { CaurousalData as data } from "../utils/CarouselData";
 import CategoriesHome from "../components/Categories_home";
-// import ProductItem from "../components/ProductItem"
 
 const HomePage = () => {
-    const navigation = useNavigation();
-    return (
-        <>
-        <Header navigation={navigation} />
-        <ScrollView>
-            <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-            
+  const navigation = useNavigation();
+
+  return (
+    <>
+      <Header navigation={navigation} />
+      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      <FlatList
+        data={[]} // empty because all content is in header
+        keyExtractor={() => 'dummy'} // needed to avoid warning
+        renderItem={null}
+        ListHeaderComponent={
+          <>
             <ActiveCampaigns />
             <CarouselHomePage data={data} />
             <CategoriesHome navigation={navigation} />
-            {/* <ProductItem /> */}
-        </ScrollView>
-        </>
-        
-    );
+            {/* Add more sections as needed */}
+          </>
+        }
+      />
+    </>
+  );
 };
 
 export default HomePage;

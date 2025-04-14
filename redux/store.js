@@ -1,19 +1,28 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Correct AsyncStorage import
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { persistStore, persistReducer } from 'redux-persist';
 import authReducer from './authSlice';
+import cartReducer from './cartSlice';
 
+// Create root reducer combining all slices
+const rootReducer = combineReducers({
+  auth: authReducer,
+  cart: cartReducer,
+});
+
+// Persist config for the whole app
 const persistConfig = {
   key: 'root',
-  storage: AsyncStorage, // Use AsyncStorage here
+  storage: AsyncStorage,
+  whitelist: ['auth', 'cart'], // Only persist these slices
 };
 
-const persistedReducer = persistReducer(persistConfig, authReducer);
+// Create persisted reducer from rootReducer
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
+// Create store
 const store = configureStore({
-  reducer: {
-    auth: persistedReducer, // Use persistedReducer for auth
-  },
+  reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
@@ -22,6 +31,7 @@ const store = configureStore({
     }),
 });
 
-export const persistor = persistStore(store); // Persist store
+export const persistor = persistStore(store);
 export default store;
+
 
