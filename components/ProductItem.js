@@ -25,6 +25,10 @@ const ProductItem = ({ navigation, categoryId, categoryName }) => {
   const [showAll, setShowAll] = useState(false);
   // const [cartItems, setCartItems] = useState({});
   const [localQuantities, setLocalQuantities] = useState({});
+  const [visibleProducts, setVisibleProducts] = useState([]);
+  const [renderCount, setRenderCount] = useState(5); // initial batch size
+  const BATCH_SIZE = 5;
+
 
 
   useEffect(() => {
@@ -46,6 +50,19 @@ const ProductItem = ({ navigation, categoryId, categoryName }) => {
 
     loadProducts();
   }, []);
+
+  useEffect(() => {
+    if (filteredProducts.length) {
+      setVisibleProducts(filteredProducts.slice(0, renderCount));
+    }
+  }, [filteredProducts, renderCount]);
+
+  const handleLoadMore = () => {
+    if (renderCount < filteredProducts.length) {
+      setRenderCount(prev => prev + BATCH_SIZE);
+    }
+  };
+  
 
   // const handleAddToCart = (product) => {
   //   dispatch(addToCart({ ...product, quantity: 1 }));
@@ -274,16 +291,16 @@ const ProductItem = ({ navigation, categoryId, categoryName }) => {
       </View>
 
       <FlatList
-        data={filteredProducts}
+        data={visibleProducts}
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
         numColumns={numColumns}
         showsVerticalScrollIndicator={false}
-        scrollEnabled={false}
+        scrollEnabled={true}
         contentContainerStyle={styles.gridContent}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5} // Adjust threshold based on performance
       />
-
-        
     </View>
   );
 };

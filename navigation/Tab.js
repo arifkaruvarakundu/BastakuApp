@@ -1,8 +1,8 @@
 // Tab.js
 import React from 'react';
-import {View} from 'react-native';
+import {View, Text} from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import {HomeStackNavigator, ShopStackNavigator} from './Stack';
+import {HomeStackNavigator, ShopStackNavigator, AccountStackNavigator} from './Stack';
 // import Profile from '../screens/Profile';
 import Account from '../screens/Account';
 import SignUp from '../screens/SignUp';
@@ -12,7 +12,8 @@ import {useSelector} from 'react-redux';
 import Shop from '../screens/shop';
 import { Ionicons } from '@expo/vector-icons';
 import ShoppingCart from '../screens/Cart';
-
+import { selectCartCount } from '../redux/cartSlice';
+import CartTabIcon from '../components/Cart_tab_Icon';
 
 const Tab = createBottomTabNavigator();
 
@@ -73,7 +74,7 @@ export default function TabNavigator() {
     component={ShopStackNavigator} 
     options={{
       headerShown: false,
-      title: 'shop',
+      title: 'Shop',
       tabBarIcon: ({ color, size, focused }) => (
         <View style={{
           backgroundColor: focused ? '#eaf5ec' : 'transparent',
@@ -88,34 +89,33 @@ export default function TabNavigator() {
         </View>
       ),
     }}
+    listeners={({ navigation }) => ({
+      tabPress: e => {
+        navigation.navigate('ShopTab', {
+          screen: 'shop',
+        });
+      },
+    })}
   />
-  
-  <Tab.Screen 
-        name="Cart" 
-        component={ShoppingCart} 
-        options={{
-          title: 'Cart',
-          tabBarIcon: ({ color, size, focused }) => (
-            <View style={{
-              backgroundColor: focused ? '#eaf5ec' : 'transparent',
-              borderRadius: 25,
-              padding: 1,
-            }}>
-              <Ionicons 
-                name="cart-outline" 
-                size={focused ? size + 2 : size} 
-                color={focused ? '#1a3c40' : color} 
-              />
-            </View>
-          ),
-        }} 
-      />
+
+<Tab.Screen 
+  name="Cart" 
+  component={ShoppingCart} 
+  options={{
+    title: 'Cart',
+    tabBarIcon: (props) => <CartTabIcon {...props} />,
+  }} 
+/>
+
+
 
   {isAuthenticated ? (
     <Tab.Screen 
-      name="Account" 
-      component={Account} 
+      name="AccountTab" 
+      component={AccountStackNavigator} 
       options={{
+        headerShown: false,
+        title: 'Account',
         tabBarIcon: ({ color, size, focused }) => (
           <View style={{
             backgroundColor: focused ? '#eaf5ec' : 'transparent',
@@ -138,8 +138,18 @@ export default function TabNavigator() {
         component={SignUp} 
         options={{
           title: 'Sign Up',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-add-outline" size={size} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <View style={{
+              backgroundColor: focused ? '#eaf5ec' : 'transparent',
+              borderRadius: 25,
+              padding: 1,
+            }}>
+              <Ionicons 
+                name="person-add-outline" 
+                size={focused ? size + 2 : size} 
+                color={focused ? '#1a3c40' : color} 
+              />
+            </View>
           ),
         }} 
       />
@@ -148,8 +158,18 @@ export default function TabNavigator() {
         component={SignIn} 
         options={{
           title: 'Sign In',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="log-in-outline" size={size} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <View style={{
+              backgroundColor: focused ? '#eaf5ec' : 'transparent',
+              borderRadius: 25,
+              padding: 1,
+            }}>
+              <Ionicons 
+                name="log-in-outline" 
+                size={focused ? size + 2 : size} 
+                color={focused ? '#1a3c40' : color} 
+              />
+            </View>
           ),
         }} 
       />

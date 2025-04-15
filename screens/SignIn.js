@@ -48,7 +48,7 @@ export default function Login({ navigation }) {
       if (response.status === 200) {
         dispatch(setAuthenticated())
 
-        await AsyncStorage.setItem('access_token', JSON.stringify(data.token.access))
+        await AsyncStorage.setItem('access_token', data.token.access)
         await AsyncStorage.setItem('user_type', JSON.stringify(data.user_type))
         // If login is successful, handle successful login logic
         Alert.alert('Login Successful');

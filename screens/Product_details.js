@@ -23,6 +23,7 @@ const ProductDetailView = ({ route, navigation }) => {
   const [fetchedProduct, setFetchedProduct] = useState(null);
   const [variants, setVariants] = useState([]);
   const [selectedVariant, setSelectedVariant] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -32,6 +33,7 @@ const ProductDetailView = ({ route, navigation }) => {
         setFetchedProduct(data);
         setVariants(data.variants);
         setSelectedVariant(data.variants[0]); // Default to first variant
+        setCurrentImageIndex(0);
       } catch (err) {
         console.error('Error fetching product:', err);
       }
@@ -56,7 +58,9 @@ const ProductDetailView = ({ route, navigation }) => {
 
   const handleBrandSelect = (brand) => {
     const variant = variants.find((v) => v.brand === brand);
-    if (variant) setSelectedVariant(variant);
+    if (variant) {
+      setSelectedVariant(variant);
+    }
   };
 
   const uniqueBrands = [...new Set(variants.map(v => v.brand))];
@@ -87,10 +91,21 @@ const ProductDetailView = ({ route, navigation }) => {
       Alert.alert("Error", "Failed to add item to cart.");
     }
   };
-  
-  
-  
 
+  const handleNextImage = () => {
+    if (!selectedVariant?.variant_images) return;
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === selectedVariant.variant_images.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+  
+  const handlePrevImage = () => {
+    if (!selectedVariant?.variant_images) return;
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === 0 ? selectedVariant.variant_images.length - 1 : prevIndex - 1
+    );
+  };
+  
   if (!fetchedProduct || !selectedVariant) {
     return (
       <View style={styles.loaderContainer}>
@@ -102,11 +117,22 @@ const ProductDetailView = ({ route, navigation }) => {
 
   return (
     <ScrollView style={styles.container}>
-      <Image
-        source={{ uri: selectedVariant.variant_images?.[0]?.image_url }}
-        style={styles.image}
-        resizeMode="cover"
-      />
+      <View style={styles.imageWrapper}>
+  <TouchableOpacity style={styles.arrowLeft} onPress={handlePrevImage}>
+    <Text style={styles.arrowText}>‹</Text>
+  </TouchableOpacity>
+
+  <Image
+    source={{ uri: selectedVariant.variant_images?.[currentImageIndex]?.image_url }}
+    style={styles.image}
+    resizeMode="cover"
+  />
+
+  <TouchableOpacity style={styles.arrowRight} onPress={handleNextImage}>
+    <Text style={styles.arrowText}>›</Text>
+  </TouchableOpacity>
+</View>
+
 
       <View style={styles.detailsContainer}>
       <View style={styles.topRow}>
@@ -169,6 +195,26 @@ const ProductDetailView = ({ route, navigation }) => {
           </TouchableOpacity>
         </View>
 
+        <View style={styles.dealRow}>
+          <TouchableOpacity style={styles.dealBoxFixed}>
+            <Text style={styles.dealText}>
+              {fetchedProduct?.campaign_status === 'active' ? 'Join Free' : 'Start Free'}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.dealBoxFixed}>
+            <Text style={styles.dealText}>
+              Early Bird - 5% Extra Off
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.dealBoxFixed}>
+            <Text style={styles.dealText}>
+              VIP Deal - 25% Extra Off
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.sectionTitle}>Description</Text>
         <Text style={styles.description}>{fetchedProduct.description}</Text>
       </View>
     </ScrollView>
@@ -188,52 +234,49 @@ const styles = StyleSheet.create({
   detailsContainer: {
     padding: 20,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#1A1A1A',
-    marginBottom: 10,
-  },
   topRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 20,
+    marginBottom: 24,
   },
   leftInfo: {
     flex: 1,
-    paddingRight: 10,
+    paddingRight: 12,
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: '700',
+    color: '#1A1A1A',
+    marginBottom: 8,
+  },
+  price: {
+    fontSize: 22,
+    fontWeight: '600',
+    color: '#228B22',
   },
   rightInfo: {
     flexShrink: 1,
     alignItems: 'flex-end',
   },
-  
-  price: {
-    fontSize: 22,
-    fontWeight: '600',
-    color: '#228B22',
-    marginBottom: 16,
-  },
-  brandSelector: {
-    marginBottom: 15,
-  },
   sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
-    marginBottom: 8,
+    marginBottom: 6,
+    color: '#444',
   },
   brandOptions: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
+    gap: 8,
+    marginBottom: 8,
+    justifyContent: 'flex-end',
   },
   brandButton: {
     paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingVertical: 6,
     backgroundColor: '#F0F0F0',
     borderRadius: 8,
-    marginRight: 10,
   },
   brandButtonActive: {
     backgroundColor: '#228B22',
@@ -247,59 +290,148 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   volumeText: {
-    fontSize: 16,
-    marginBottom: 16,
-  },
-  quantityContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  qtyButton: {
-    width: 40,
-    height: 40,
-    backgroundColor: '#E6F2E6',
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  qtyText: {
-    fontSize: 22,
-    color: '#228B22',
-    fontWeight: '700',
-  },
-  qtyDisplay: {
-    marginHorizontal: 20,
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: '500',
-    color: '#333',
+    color: '#666',
+    marginTop: 6,
   },
-  description: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: '#444',
-    marginBottom: 30,
-  },
+
   actionRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 20,
+    marginBottom: 24,
+    gap: 20,
+  },
+  quantityContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F3F3F3',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  qtyButton: {
+    width: 36,
+    height: 36,
+    backgroundColor: '#E6F2E6',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  qtyText: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#228B22',
+  },
+  qtyDisplay: {
+    marginHorizontal: 12,
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#1A1A1A',
   },
   cartButton: {
+    flex: 1,
     backgroundColor: '#228B22',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
+    paddingVertical: 12,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   cartButtonText: {
     color: '#fff',
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: '600',
-    letterSpacing: 0.5,
+    letterSpacing: 0.4,
   },
+
+  dealRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 24,
+    gap: 10,
+  },
+  dealBoxFixed: {
+    flex: 1,
+    backgroundColor: '#F9F9F9',
+    paddingVertical: 14,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    borderLeftWidth: 4,
+    borderLeftColor: '#228B22',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 60,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  dealText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#333',
+    textAlign: 'center',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 10,
+    color: '#1A1A1A',
+  },
+
+  imageWrapper: {
+    position: 'relative',
+    width: '100%',
+    height: 340,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  arrowLeft: {
+    position: 'absolute',
+    left: 10,
+    zIndex: 2,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    borderRadius: 20,
+    width: 36,
+    height: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  
+  arrowRight: {
+    position: 'absolute',
+    right: 10,
+    zIndex: 2,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    borderRadius: 20,
+    width: 36,
+    height: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  
+  arrowText: {
+    fontSize: 24,
+    color: '#fff',
+    fontWeight: '600',
+  },
+  
+
+  description: {
+    fontSize: 15,
+    lineHeight: 22,
+    color: '#555',
+    marginBottom: 30,
+  },
+
   loaderContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -313,5 +445,6 @@ const styles = StyleSheet.create({
     color: '#888',
   },
 });
+
 
 export default ProductDetailView;

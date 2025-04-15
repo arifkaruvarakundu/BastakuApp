@@ -25,7 +25,7 @@ const Account = () => {
   };
 
   const options = [
-    { icon: 'location-outline', label: 'Address', onPress: () => navigation.navigate('AddressScreen') },
+    { icon: 'location-outline', label: 'Address', onPress: () => navigation.navigate('Address') },
     { icon: 'receipt-outline', label: 'Orders', onPress: () => navigation.navigate('OrdersScreen') },
     { icon: 'megaphone-outline', label: 'Campaigns', onPress: () => navigation.navigate('CampaignsScreen') },
     { icon: 'notifications-outline', label: 'Notifications', onPress: () => navigation.navigate('NotificationsScreen') },

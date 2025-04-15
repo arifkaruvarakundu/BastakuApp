@@ -27,5 +27,9 @@ const cartSlice = createSlice({
   },
 });
 
+export const selectCartCount = (state) => {
+  return Object.values(state.cart.cartItems).filter(Boolean).length;
+};
+
 export const { addToCart, updateCartItemQuantity, removeFromCart } = cartSlice.actions;
 export default cartSlice.reducer;
