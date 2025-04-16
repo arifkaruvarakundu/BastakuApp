@@ -13,6 +13,7 @@ import axios from 'axios';
 import API_BASE_URL from '../config';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateCartItemQuantity, addToCart } from '../redux/cartSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ProductDetailView = ({ route, navigation }) => {
   const { productId, quantity: initialQuantity } = route.params;
@@ -24,12 +25,14 @@ const ProductDetailView = ({ route, navigation }) => {
   const [variants, setVariants] = useState([]);
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [campaignDetails, setCampaignDetails] = useState(null);
 
   useEffect(() => {
     const fetchProductDetails = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/product_details/${productId}/`);
         const data = response.data;
+        console.log("data@@@@", data)
         setFetchedProduct(data);
         setVariants(data.variants);
         setSelectedVariant(data.variants[0]); // Default to first variant
@@ -105,6 +108,90 @@ const ProductDetailView = ({ route, navigation }) => {
       prevIndex === 0 ? selectedVariant.variant_images.length - 1 : prevIndex - 1
     );
   };
+
+  useEffect(() => {
+    if (!fetchedProduct || !Array.isArray(fetchedProduct.variants)) return;
+    if (!selectedVariant?.id) return;
+  
+    const campaignVariants = fetchedProduct.variants.filter((variant) => variant.is_in_campaign);
+    console.log("Campaign Variants:", campaignVariants);
+  
+    if (campaignVariants.length > 0) {
+      axios.get(`${API_BASE_URL}/campaigns/`)
+        .then((response) => {
+          console.log("Campaigns Data from API:", response.data);
+  
+          const relatedCampaign = response.data.find(
+            (campaign) => parseInt(campaign.variant.id) === selectedVariant.id
+          );
+  
+          console.log("Related Campaign:", relatedCampaign);
+  
+          if (relatedCampaign) {
+            setCampaignDetails(relatedCampaign);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching campaigns:", error);
+        });
+    }
+  }, [selectedVariant?.id, fetchedProduct?.variants]);
+  
+  const handleDealClick = async (dealType, navigation) => {
+    // if (!selectedPaymentOption) {
+    //   alert("Please select a payment option.");
+    //   return;
+    // }
+    console.log("deal clicked")
+  
+    const selectedVariantDetails = selectedVariant;
+
+    console.log("selectedVariantDetails:",selectedVariantDetails)
+  
+    // if (!selectedVariantDetails) {
+    //   alert("No variant selected.");
+    //   return;
+    // }
+  
+    // setSelectedVariant(selectedVariantDetails);
+  
+    const payload = {
+      variant: selectedVariant,
+      quantity: quantity,
+      // payment_option: selectedPaymentOption,
+      deal_type: dealType,
+    };
+  
+    try {
+      if (!selectedVariantDetails.is_in_campaign) {
+        // Store details in localStorage for starting a campaign
+        await AsyncStorage.setItem("start_campaign_details", JSON.stringify(payload));
+        
+        
+        navigation.navigate("StartCampaign");
+      }
+      else{
+      await AsyncStorage.setItem("campaign_details", JSON.stringify(payload));
+  
+      const campaignId = campaignDetails?.id || fetchedProduct?.id; // fallback if needed
+      navigation.navigate("CampaignDetails", {
+        id: campaignId,
+        deal_type: dealType,
+      });
+      }
+  
+    } catch (error) {
+      console.error("❌ Error handling deal click:", error);
+      alert("Something went wrong. Check the console for details.");
+    }
+  };
+
+  const currentParticipants = campaignDetails?.current_participants ?? 0;
+  const targetQuantity = selectedVariant?.minimum_order_quantity_for_offer ?? 0;
+  const currentQuantity = campaignDetails?.current_quantity ?? 0;
+  const quantityLeft = Math.max(targetQuantity - currentQuantity, 0);
+  const progress = targetQuantity ? (currentQuantity / targetQuantity) * 100 : 0;
+
   
   if (!fetchedProduct || !selectedVariant) {
     return (
@@ -194,26 +281,52 @@ const ProductDetailView = ({ route, navigation }) => {
             <Text style={styles.cartButtonText}>Add to Cart</Text>
           </TouchableOpacity>
         </View>
+        {selectedVariant?.is_in_campaign && (
+            <View style={styles.groupProgressSection}>
+              <View style={styles.groupInfo}>
+                <Text style={styles.groupTitle}>Group Campaign Active</Text>
+                <Text style={styles.groupStats}>
+                  <Text style={styles.boldText}>{currentParticipants}</Text> participants ·{' '}
+                  <Text style={styles.boldText}>{quantityLeft}</Text> more to unlock campaign price
+                </Text>
+              </View>
+
+              <View style={styles.progressBar}>
+                <View style={[styles.progressFill, { width: `${progress}%` }]} />
+              </View>
+
+              <View style={styles.progressLabels}>
+                <Text style={styles.labelText}>Current: {currentQuantity}</Text>
+                <Text style={styles.labelText}>Target: {targetQuantity}</Text>
+              </View>
+            </View>
+          )}
 
         <View style={styles.dealRow}>
-          <TouchableOpacity style={styles.dealBoxFixed}>
+          <TouchableOpacity
+            style={styles.dealBoxFixed}
+            onPress={() => handleDealClick("join_or_start", navigation)}
+          >
             <Text style={styles.dealText}>
-              {fetchedProduct?.campaign_status === 'active' ? 'Join Free' : 'Start Free'}
+              {fetchedProduct?.is_in_campaign ? 'Join Free' : 'Start Free'}
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.dealBoxFixed}>
-            <Text style={styles.dealText}>
-              Early Bird - 5% Extra Off
-            </Text>
+          <TouchableOpacity
+            style={styles.dealBoxFixed}
+            onPress={() => handleDealClick("early_bird", navigation)}
+          >
+            <Text style={styles.dealText}>Early Bird - 5% Extra Off</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.dealBoxFixed}>
-            <Text style={styles.dealText}>
-              VIP Deal - 25% Extra Off
-            </Text>
+          <TouchableOpacity
+            style={styles.dealBoxFixed}
+            onPress={() => handleDealClick("vip_deal", navigation)}
+          >
+            <Text style={styles.dealText}>VIP Deal - 25% Extra Off</Text>
           </TouchableOpacity>
         </View>
+
         <Text style={styles.sectionTitle}>Description</Text>
         <Text style={styles.description}>{fetchedProduct.description}</Text>
       </View>
@@ -356,6 +469,51 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     gap: 10,
   },
+  groupProgressSection: {
+    backgroundColor: '#F3FDF3',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 24,
+    borderLeftWidth: 4,
+    borderLeftColor: '#228B22',
+  },
+  groupInfo: {
+    marginBottom: 10,
+  },
+  groupTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#228B22',
+    marginBottom: 4,
+  },
+  groupStats: {
+    fontSize: 14,
+    color: '#555',
+  },
+  boldText: {
+    fontWeight: '700',
+    color: '#000',
+  },
+  progressBar: {
+    height: 10,
+    backgroundColor: '#E0E0E0',
+    borderRadius: 6,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: '#4CAF50',
+  },
+  progressLabels: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 6,
+  },
+  labelText: {
+    fontSize: 12,
+    color: '#444',
+  },
+  
   dealBoxFixed: {
     flex: 1,
     backgroundColor: '#F9F9F9',

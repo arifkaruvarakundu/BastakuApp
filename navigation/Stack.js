@@ -6,6 +6,8 @@ import Shop from '../screens/shop';
 import ProductDetailView from '../screens/Product_details';
 import AddressScreen from '../screens/Address_screen';
 import Account from '../screens/Account';
+import CampaignDetailView from '../screens/Campaign_detail';
+import StartCampaignView from '../screens/Start_Campaign';
 
 const Stack = createNativeStackNavigator();
 
@@ -34,6 +36,14 @@ export const ShopStackNavigator = () => {
       <Stack.Screen 
         name="ProductDetails" 
         component={ProductDetailView} 
+      />
+      <Stack.Screen 
+        name="CampaignDetails" 
+        component={CampaignDetailView} 
+      />
+      <Stack.Screen 
+        name="StartCampaign" 
+        component={StartCampaignView} 
       />
     </Stack.Navigator>
   );
