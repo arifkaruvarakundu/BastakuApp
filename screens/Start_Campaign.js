@@ -37,8 +37,8 @@ const StartCampaignScreen = () => {
 
           setPaymentOption(startDetails.payment_option);
 
-          if (startDetails.deal_type === 'early_bird') calculatedPrice *= 0.95;
-          if (startDetails.deal_type === 'vip_deal') calculatedPrice *= 0.75;
+          if (startDetails.payment_option === 'basic') calculatedPrice *= 0.95;
+          if (startDetails.payment_option === 'premium') calculatedPrice *= 0.75;
           console.log(calculatedPrice)
 
           setCampaignPrice(calculatedPrice);
@@ -92,7 +92,7 @@ const StartCampaignScreen = () => {
 
       if (response.status === 201) {
         Alert.alert("Success", "Campaign started successfully!");
-        navigation.navigate("Home"); // or your homepage screen
+        navigation.navigate('HomeTab', { screen: 'Home' });
       } else {
         Alert.alert("Error", "Failed to start the campaign.");
       }
@@ -170,7 +170,7 @@ const StartCampaignScreen = () => {
       </Text>
 
       <Text style={styles.label}>Total Amount (in KD)</Text>
-      <TextInput style={styles.input} value={(campaignPrice * quantity).toFixed(2)} editable={false} />
+      <TextInput style={styles.input} value={(campaignPrice * quantity).toFixed(3)} editable={false} />
 
       <TouchableOpacity style={styles.startBtn} onPress={handleStartCampaign} disabled={isLoading}>
         {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnText}>Start Campaign</Text>}

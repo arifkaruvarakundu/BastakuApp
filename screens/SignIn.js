@@ -57,7 +57,7 @@ export default function Login({ navigation }) {
         // await AsyncStorage.setItem('access_token', data.token);
 
         // Navigate to the Home screen
-        navigation.navigate('Home');
+        navigation.navigate('HomeTab', { screen: 'Home' });
       } else {
         // If login fails, show error message from response
         Alert.alert('Login Failed', data.message || 'Invalid email or password.');

@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setNotAuthenticated } from '../redux/authSlice';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { clearCart } from '../redux/cartSlice';
 
 const Account = () => {
   const dispatch = useDispatch();
@@ -16,9 +17,10 @@ const Account = () => {
       await AsyncStorage.removeItem('access_token');
       await AsyncStorage.removeItem('user_type');
 
+      dispatch(clearCart());
       dispatch(setNotAuthenticated());
       Alert.alert('Logged Out', 'You have been logged out successfully.');
-      navigation.navigate('Home');
+      navigation.navigate('HomeTab', { screen: 'Home' });
     } catch (error) {
       console.log('Error during logout:', error);
     }

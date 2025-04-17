@@ -20,7 +20,7 @@ const HomePage = () => {
         renderItem={null}
         ListHeaderComponent={
           <>
-            <ActiveCampaigns />
+            <ActiveCampaigns navigation={navigation} />
             <CarouselHomePage data={data} />
             <CategoriesHome navigation={navigation} />
             {/* Add more sections as needed */}

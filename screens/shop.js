@@ -6,6 +6,7 @@ import Header from '../components/Header';
 import {useRoute} from '@react-navigation/native';
 // import { useNavigation } from '@react-navigation/native';
 
+
 const Shop = ({navigation}) => {
 
     // const navigation = useNavigation();
@@ -37,14 +38,18 @@ const Shop = ({navigation}) => {
         navigation = {navigation}
         onCategorySelect = {handleCategorySelect}
     />
-    <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <ProductItem 
+    {/* <ScrollView contentContainerStyle={styles.scrollContainer}> */}
+    <View style={{ flex: 1, paddingBottom: 10  
+
+     }}>
+      <ProductItem 
         navigation={navigation} 
         categoryId={selectedCategoryId} 
         categoryName={selectedCategoryName}
         onCategorySelect={handleCategorySelect}
-        />
-    </ScrollView>
+      />
+    </View>
+    {/* </ScrollView> */}
     </>
   );
 };

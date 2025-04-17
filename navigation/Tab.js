@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import ShoppingCart from '../screens/Cart';
 import { selectCartCount } from '../redux/cartSlice';
 import CartTabIcon from '../components/Cart_tab_Icon';
+import { StackActions } from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
 
@@ -89,13 +90,27 @@ export default function TabNavigator() {
         </View>
       ),
     }}
-    listeners={({ navigation }) => ({
+    listeners={({ navigation, route }) => ({
       tabPress: e => {
-        navigation.navigate('ShopTab', {
-          screen: 'shop',
-        });
+        const state = navigation.getState();
+        const shopTab = state.routes.find(r => r.name === 'ShopTab');
+        const nestedState = shopTab?.state;
+      
+        if (nestedState && nestedState.index > 0) {
+          // We're not at the root of Shop stack — reset it
+          navigation.navigate('ShopTab'); // ensure tab is focused
+          navigation.dispatch({
+            ...StackActions.popToTop(),
+            target: nestedState.key, // Reset only the nested navigator
+          });
+        } else {
+          // Already at root or no nested state — navigate explicitly to shop screen
+          navigation.navigate('ShopTab', {
+            screen: 'shop',
+          });
+        }
       },
-    })}
+    })}    
   />
 
 <Tab.Screen 

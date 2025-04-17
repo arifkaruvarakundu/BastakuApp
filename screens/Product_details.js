@@ -159,7 +159,7 @@ const ProductDetailView = ({ route, navigation }) => {
       variant: selectedVariant,
       quantity: quantity,
       // payment_option: selectedPaymentOption,
-      deal_type: dealType,
+      payment_option: dealType,
     };
   
     try {
@@ -305,7 +305,7 @@ const ProductDetailView = ({ route, navigation }) => {
         <View style={styles.dealRow}>
           <TouchableOpacity
             style={styles.dealBoxFixed}
-            onPress={() => handleDealClick("join_or_start", navigation)}
+            onPress={() => handleDealClick("free", navigation)}
           >
             <Text style={styles.dealText}>
               {fetchedProduct?.is_in_campaign ? 'Join Free' : 'Start Free'}
@@ -314,14 +314,14 @@ const ProductDetailView = ({ route, navigation }) => {
 
           <TouchableOpacity
             style={styles.dealBoxFixed}
-            onPress={() => handleDealClick("early_bird", navigation)}
+            onPress={() => handleDealClick("basic", navigation)}
           >
             <Text style={styles.dealText}>Early Bird - 5% Extra Off</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.dealBoxFixed}
-            onPress={() => handleDealClick("vip_deal", navigation)}
+            onPress={() => handleDealClick("premium", navigation)}
           >
             <Text style={styles.dealText}>VIP Deal - 25% Extra Off</Text>
           </TouchableOpacity>

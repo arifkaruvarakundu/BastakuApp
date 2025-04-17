@@ -8,6 +8,7 @@ import AddressScreen from '../screens/Address_screen';
 import Account from '../screens/Account';
 import CampaignDetailView from '../screens/Campaign_detail';
 import StartCampaignView from '../screens/Start_Campaign';
+import OrdersScreen from '../screens/Orders_screen';
 
 const Stack = createNativeStackNavigator();
 
@@ -61,6 +62,10 @@ export const AccountStackNavigator = () =>{
       <Stack.Screen
         name = "Address"
         component = {AddressScreen}
+      />
+      <Stack.Screen
+        name = "OrdersScreen"
+        component = {OrdersScreen}
       />
     </ Stack.Navigator>
   );

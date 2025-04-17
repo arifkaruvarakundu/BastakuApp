@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -8,8 +8,10 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { useFocusEffect } from '@react-navigation/native';
 import API_BASE_URL from '../config'
 import axios from "axios";
+import { useNavigation } from '@react-navigation/native';
 
 const ActiveGroupDealStory = () => {
   const [campaigns, setCampaigns] = useState([]);
@@ -17,26 +19,40 @@ const ActiveGroupDealStory = () => {
   const [error, setError] = useState(null);
 
   // You can uncomment and complete this effect to fetch campaigns
-  useEffect(() => {
-    const fetchCampaigns = async () => {
-      try {
-        const response = await axios.get(`${API_BASE_URL}/campaigns/`);
-        // console.log("response data:", response.data)
-        setCampaigns(response.data);
-        setLoading(false);
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
-      }
-    };
-    fetchCampaigns();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchCampaigns = async () => {
+        try {
+          const response = await axios.get(`${API_BASE_URL}/campaigns/`);
+          setCampaigns(response.data);
+          setLoading(false);
+        } catch (err) {
+          setError(err.message);
+          setLoading(false);
+        }
+      };
+
+      fetchCampaigns();
+    }, [])
+  );
+
+  const navigation = useNavigation();
+
 
   const renderItem = ({ item }) => {
     const firstImage = item.variant?.variant_images?.[0]; // Safely get first image
     const imageUrl = firstImage?.image_url; // Assuming image object has an `image` field
     return (
-      <TouchableOpacity style={styles.storyItem} activeOpacity={0.8}>
+      <TouchableOpacity 
+        style={styles.storyItem} 
+        activeOpacity={0.8}
+        onPress={() =>
+          navigation.navigate('ShopTab', {
+            screen: 'ProductDetails',
+            params: { productId: item.product_id },
+          })
+        }
+        >
         <LinearGradient
           colors={["#f0e3d6", "#f6f9f1", "#e2f4e1", "#b6e4af", "#a4daa6"]}
           start={{ x: 0, y: 0 }}
