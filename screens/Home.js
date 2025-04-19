@@ -1,5 +1,5 @@
-import React from 'react';
-import { FlatList, StatusBar } from 'react-native';
+import React,{useCallback} from 'react';
+import { FlatList, StatusBar} from 'react-native';
 import ActiveCampaigns from "../components/ActiveCampaigns";
 import Header from "../components/Header";
 import { useNavigation } from '@react-navigation/native';
@@ -9,6 +9,10 @@ import CategoriesHome from "../components/Categories_home";
 
 const HomePage = () => {
   const navigation = useNavigation();
+  // const [refreshing, setRefreshing] = useState(false);
+  // const onRefresh = useCallback(() => {
+  //   setRefreshing(true);
+  // }, []);
 
   return (
     <>

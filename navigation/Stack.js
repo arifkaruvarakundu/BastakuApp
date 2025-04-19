@@ -9,6 +9,7 @@ import Account from '../screens/Account';
 import CampaignDetailView from '../screens/Campaign_detail';
 import StartCampaignView from '../screens/Start_Campaign';
 import OrdersScreen from '../screens/Orders_screen';
+import AccountCampaigns from '../screens/Campaigns_screen'
 
 const Stack = createNativeStackNavigator();
 
@@ -66,6 +67,10 @@ export const AccountStackNavigator = () =>{
       <Stack.Screen
         name = "OrdersScreen"
         component = {OrdersScreen}
+      />
+      <Stack.Screen
+        name = "CampaignsScreen"
+        component = {AccountCampaigns}
       />
     </ Stack.Navigator>
   );

@@ -16,6 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const OrdersScreen = () => {
   const [orders, setOrders] = useState([]);
+  const [campaignOrders, setCampaignOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -29,13 +30,16 @@ const OrdersScreen = () => {
         return;
       }
 
-      const response = await axios.get(`${API_BASE_URL}/orders/`, {
+      const response = await axios.get(`${API_BASE_URL}/user_orders/`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log("orders:", response.data)
+      const { orders, campaign_orders } = response.data;
 
-      setOrders(response.data);
+      setOrders(orders || []);
+      setCampaignOrders(campaign_orders || []);
       setError(null);
     } catch (err) {
       console.error('Error fetching orders:', err);
@@ -55,15 +59,60 @@ const OrdersScreen = () => {
     fetchOrders();
   }, [fetchOrders]);
 
+  const getStatusColor = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'pending': return '#FF9500';
+      case 'processing': return '#007AFF';
+      case 'shipped': return '#5856D6';
+      case 'delivered': return '#34C759';
+      case 'cancelled': return '#FF3B30';
+      case 'full_paid': return '#34C759';
+      default: return '#000';
+    }
+  };
+
   const renderOrderItem = ({ item }) => (
     <TouchableOpacity style={styles.orderCard}>
       <View style={styles.orderHeader}>
         <Text style={styles.orderId}>Order #{item.id}</Text>
-        <Text style={[
-          styles.orderStatus,
-          { color: getStatusColor(item.status) }
-        ]}>
-          {item.status}
+        <Text style={[styles.orderStatus, { color: getStatusColor(item.payment_status) }]}>
+          {item.payment_status}
+        </Text>
+      </View>
+  
+      <View style={styles.orderDetails}>
+        <Text style={styles.orderDate}>
+          {new Date(item.created_at).toLocaleDateString()}
+        </Text>
+        <Text style={styles.orderTotal}>Total: {item.total_price} KD</Text>
+      </View>
+  
+      <View style={styles.itemRow}>
+        <Image
+          source={{ uri: item.variant?.variant_images?.[0]?.image_url }}
+          style={styles.itemImage}
+        />
+        <View style={styles.itemInfo}>
+          <Text style={styles.itemName}>{item.variant?.brand || 'No brand'}</Text>
+          <Text style={styles.itemQuantity}>Qty: {item.quantity}</Text>
+        </View>
+        <Text style={styles.itemPrice}>${item.variant?.price || '0.00'}</Text>
+      </View>
+  
+      <View style={styles.orderFooter}>
+        <TouchableOpacity style={styles.trackButton}>
+          <Text style={styles.trackButtonText}>Track Order</Text>
+        </TouchableOpacity>
+      </View>
+    </TouchableOpacity>
+  );
+  
+  const renderCampaignOrderItem = ({ item }) => (
+    <TouchableOpacity style={styles.orderCard}>
+      <View style={styles.orderHeader}>
+        <Text style={styles.orderId}>Campaign Order #{item.id}</Text>
+        <Text style={[styles.orderStatus, { color: getStatusColor(item.payment_status) }]}>
+          {item.payment_status}
         </Text>
       </View>
 
@@ -71,31 +120,24 @@ const OrdersScreen = () => {
         <Text style={styles.orderDate}>
           {new Date(item.created_at).toLocaleDateString()}
         </Text>
-        <Text style={styles.orderTotal}>Total: ${item.total_amount}</Text>
+        <Text style={styles.orderTotal}>Total: ${item.total_price}</Text>
       </View>
 
-      <View style={styles.itemsContainer}>
-        {item.items?.map((orderItem, index) => (
-          <View key={index} style={styles.itemRow}>
-            <Image
-              source={{ uri: orderItem.image }}
-              style={styles.itemImage}
-            />
-            <View style={styles.itemInfo}>
-              <Text style={styles.itemName}>{orderItem.name}</Text>
-              <Text style={styles.itemQuantity}>Qty: {orderItem.quantity}</Text>
-            </View>
-            <Text style={styles.itemPrice}>${orderItem.price}</Text>
-          </View>
-        ))}
+      <View style={styles.itemRow}>
+        <Image
+          source={{ uri: item.variant?.variant_images?.[0]?.image_url }}
+          style={styles.itemImage}
+        />
+        <View style={styles.itemInfo}>
+          <Text style={styles.itemName}>{item.campaign}</Text>
+          <Text style={styles.itemQuantity}>Qty: {item.quantity}</Text>
+        </View>
+        <Text style={styles.itemPrice}>${item.total_price}</Text>
       </View>
 
       <View style={styles.orderFooter}>
-        <TouchableOpacity
-          style={styles.trackButton}
-          onPress={() => {/* Implement tracking */}}
-        >
-          <Text style={styles.trackButtonText}>Track Order</Text>
+        <TouchableOpacity style={styles.trackButton}>
+          <Text style={styles.trackButtonText}>Track Campaign</Text>
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
@@ -115,10 +157,7 @@ const OrdersScreen = () => {
       <View style={styles.errorContainer}>
         <Ionicons name="alert-circle-outline" size={48} color="#FF3B30" />
         <Text style={styles.errorText}>{error}</Text>
-        <TouchableOpacity
-          style={styles.retryButton}
-          onPress={fetchOrders}
-        >
+        <TouchableOpacity style={styles.retryButton} onPress={fetchOrders}>
           <Text style={styles.retryButtonText}>Retry</Text>
         </TouchableOpacity>
       </View>
@@ -127,18 +166,26 @@ const OrdersScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Your Orders</Text>
+      <Text style={styles.title}>Campaign Orders</Text>
+      {campaignOrders.length === 0 ? (
+        <Text style={styles.emptyText}>No campaign orders found</Text>
+      ) : (
+        <FlatList
+          data={campaignOrders}
+          renderItem={renderCampaignOrderItem}
+          keyExtractor={(item) => `campaign-${item.id}`}
+          contentContainerStyle={styles.listContainer}
+        />
+      )}
+
+      <Text style={styles.title}>Regular Orders</Text>
       {orders.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <Ionicons name="receipt-outline" size={64} color="#888" />
-          <Text style={styles.emptyText}>No orders found</Text>
-          <Text style={styles.emptySubText}>Your order history will appear here</Text>
-        </View>
+        <Text style={styles.emptyText}>No regular orders found</Text>
       ) : (
         <FlatList
           data={orders}
           renderItem={renderOrderItem}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => `regular-${item.id}`}
           contentContainerStyle={styles.listContainer}
           refreshControl={
             <RefreshControl
@@ -153,23 +200,6 @@ const OrdersScreen = () => {
   );
 };
 
-const getStatusColor = (status) => {
-  switch (status.toLowerCase()) {
-    case 'pending':
-      return '#FF9500';
-    case 'processing':
-      return '#007AFF';
-    case 'shipped':
-      return '#5856D6';
-    case 'delivered':
-      return '#34C759';
-    case 'cancelled':
-      return '#FF3B30';
-    default:
-      return '#000';
-  }
-};
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -179,7 +209,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 16,
+    marginVertical: 12,
     color: '#1A1A1A',
   },
   loaderContainer: {
@@ -215,21 +245,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
   emptyText: {
     marginTop: 16,
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1A1A1A',
-  },
-  emptySubText: {
-    marginTop: 8,
-    fontSize: 14,
+    fontSize: 16,
     color: '#888',
     textAlign: 'center',
   },
