@@ -11,7 +11,7 @@ import {
 import { Feather } from "@expo/vector-icons";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
-import { API_BASE_URL } from "../config";
+import API_BASE_URL from "../config";
 
 const Header = () => {
   const navigation = useNavigation();
@@ -33,7 +33,10 @@ const Header = () => {
 
   const fetchSearchResults = async () => {
     try {
+      console.log(`${API_BASE_URL}/search/?query=${query}`);
+
       const response = await axios.get(`${API_BASE_URL}/search/?query=${query}`);
+      // console.log("products and categories:", response.data)
       const products = Array.isArray(response.data?.products) ? response.data.products : [];
       const categories = Array.isArray(response.data?.categories) ? response.data.categories : [];
 
@@ -46,17 +49,55 @@ const Header = () => {
 
   const renderSuggestions = () => (
     <View style={styles.suggestionBox}>
-      <Text style={styles.suggestionTitle}>Products</Text>
-      {suggestions.products.map((item, index) => (
-        <Text key={`p-${index}`} style={styles.suggestionItem}>{item.name}</Text>
-      ))}
-      <Text style={styles.suggestionTitle}>Categories</Text>
-      {suggestions.categories.map((item, index) => (
-        <Text key={`c-${index}`} style={styles.suggestionItem}>{item.name}</Text>
-      ))}
+      {suggestions.products.length > 0 && (
+        <>
+          <Text style={styles.suggestionTitle}>Products</Text>
+          {suggestions.products.map((item, index) => (
+            <TouchableOpacity
+              key={`p-${index}`}
+              style={styles.suggestionItemWrapper}
+              onPress={() => {
+                setSearchOpen(false);
+                navigation.navigate('ShopTab', {
+                  screen: 'ProductDetails',
+                  params: { productId: item.id }
+                });
+              }}
+            >
+              <Feather name="box" size={18} color="#444" style={{ marginRight: 8 }} />
+              <Text style={styles.suggestionItem}>{item.product_name}</Text>
+            </TouchableOpacity>
+          ))}
+        </>
+      )}
+  
+      {suggestions.categories.length > 0 && (
+        <>
+          <Text style={styles.suggestionTitle}>Categories</Text>
+          {suggestions.categories.map((item, index) => (
+            <TouchableOpacity
+              key={`c-${index}`}
+              style={styles.suggestionItemWrapper}
+              onPress={() => {
+                setSearchOpen(false);
+                navigation.navigate("ShopTab", {
+                  screen: 'shop',
+                  params: {
+                    categoryId: item.id,
+                    categoryName: item.name
+                  },
+                });
+              }}
+            >
+              <Feather name="tag" size={18} color="#444" style={{ marginRight: 8 }} />
+              <Text style={styles.suggestionItem}>{item.name}</Text>
+            </TouchableOpacity>
+          ))}
+        </>
+      )}
     </View>
-  );
-
+  );  
+  
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
@@ -130,20 +171,38 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     paddingHorizontal: 15,
     paddingVertical: 10,
-    borderTopWidth: 1,
-    borderColor: "#ccc",
+    marginHorizontal: 10,
+    marginBottom: 10,
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
+  
   suggestionTitle: {
-    fontWeight: "700",
+    fontWeight: "bold",
     fontSize: 16,
     marginTop: 10,
-    color: "#333",
+    marginBottom: 5,
+    color: "#222",
   },
+  
+  suggestionItemWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+    borderBottomWidth: 0.5,
+    borderColor: "#eee",
+  },
+  
   suggestionItem: {
     fontSize: 15,
-    paddingVertical: 4,
-    color: "#555",
+    color: "#444",
   },
+  
 });
 
 export default Header;

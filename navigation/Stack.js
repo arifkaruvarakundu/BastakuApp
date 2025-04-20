@@ -10,6 +10,8 @@ import CampaignDetailView from '../screens/Campaign_detail';
 import StartCampaignView from '../screens/Start_Campaign';
 import OrdersScreen from '../screens/Orders_screen';
 import AccountCampaigns from '../screens/Campaigns_screen'
+import ShoppingCart from '../screens/Cart';
+import ShopCheckoutScreen from '../screens/Checkout_screen';
 
 const Stack = createNativeStackNavigator();
 
@@ -73,5 +75,22 @@ export const AccountStackNavigator = () =>{
         component = {AccountCampaigns}
       />
     </ Stack.Navigator>
+  );
+};
+
+// Home Stack
+export const CartStackNavigator = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen 
+        name="Cart" 
+        component={ShoppingCart} 
+        options={{ headerShown: false }} 
+      />
+        <Stack.Screen 
+        name="Checkout" 
+        component={ShopCheckoutScreen} 
+      />
+    </Stack.Navigator>
   );
 };

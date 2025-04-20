@@ -3,6 +3,7 @@ import { View, Text, Image, StyleSheet, FlatList, TouchableOpacity } from 'react
 import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
 import { updateCartItemQuantity, removeFromCart } from '../redux/cartSlice';
+import { useNavigation } from '@react-navigation/native';
 
 const ShoppingCart = () => {
 
@@ -11,7 +12,7 @@ const ShoppingCart = () => {
     state => state.cart.cartItems,
     (cartItems) => Object.values(cartItems).filter(item => item && item.id)
   );
-  
+  const navigation = useNavigation();
   // then in your component
   const cartItems = useSelector(selectCartItems);
 
@@ -38,7 +39,10 @@ const ShoppingCart = () => {
 
   const handleCheckout = () => {
     // You can navigate or trigger any checkout action here
-    alert('Proceeding to checkout!');
+    navigation.navigate("CartTab", {
+      screen: 'Checkout',
+      
+    });
   };
 
   const renderItem = ({ item }) => {

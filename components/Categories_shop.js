@@ -73,14 +73,14 @@ const CategoriesShop = ({ navigation, fetchCategories, onCategorySelect }) => {
           resizeMode="cover"
         />
       </View>
-      <Text style={styles.sellerName} numberOfLines={1}>
+      <Text style={styles.sellerName} numberOfLines={2}>
         {item.name}
       </Text>
-      <View style={styles.ratingContainer}>
+      {/* <View style={styles.ratingContainer}>
         <AntDesign name="star" size={12} color="#FFD700" />
         <Text style={styles.ratingText}>{item.rating}</Text>
-      </View>
-      <Text style={styles.productsText}>{item.productsCount} Products</Text>
+      </View> */}
+      {/* <Text style={styles.productsText}>{item.productsCount}</Text> */}
     </TouchableOpacity>
   );
 
@@ -107,11 +107,11 @@ const CategoriesShop = ({ navigation, fetchCategories, onCategorySelect }) => {
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <Text style={styles.headerTitle}>Featured Categories</Text>
-        <TouchableOpacity onPress={handleViewAll} style={styles.viewAllButton}>
+        <Text style={styles.headerTitle}>Categories</Text>
+        {/* <TouchableOpacity onPress={handleViewAll} style={styles.viewAllButton}>
           <Text style={styles.viewAllText}>More</Text>
           <AntDesign name="right" size={16} color="#b6e4af" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       <FlatList
         data={categories}

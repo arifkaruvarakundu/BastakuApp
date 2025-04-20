@@ -2,7 +2,7 @@
 import React from 'react';
 import {View, Text} from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import {HomeStackNavigator, ShopStackNavigator, AccountStackNavigator} from './Stack';
+import {HomeStackNavigator, ShopStackNavigator, AccountStackNavigator, CartStackNavigator} from './Stack';
 // import Profile from '../screens/Profile';
 import Account from '../screens/Account';
 import SignUp from '../screens/SignUp';
@@ -70,52 +70,49 @@ export default function TabNavigator() {
         }}  
       />
 
-  <Tab.Screen 
-    name="ShopTab" 
-    component={ShopStackNavigator} 
-    options={{
-      headerShown: false,
-      title: 'Shop',
-      tabBarIcon: ({ color, size, focused }) => (
-        <View style={{
-          backgroundColor: focused ? '#eaf5ec' : 'transparent',
-          borderRadius: 25,
-          padding: 1,
-        }}>
-          <Ionicons 
-            name="storefront-outline" 
-            size={focused ? size + 2 : size} 
-            color={focused ? '#1a3c40' : color} 
-          />
-        </View>
-      ),
-    }}
-    listeners={({ navigation, route }) => ({
-      tabPress: e => {
-        const state = navigation.getState();
-        const shopTab = state.routes.find(r => r.name === 'ShopTab');
-        const nestedState = shopTab?.state;
-      
-        if (nestedState && nestedState.index > 0) {
-          // We're not at the root of Shop stack — reset it
-          navigation.navigate('ShopTab'); // ensure tab is focused
-          navigation.dispatch({
-            ...StackActions.popToTop(),
-            target: nestedState.key, // Reset only the nested navigator
-          });
-        } else {
-          // Already at root or no nested state — navigate explicitly to shop screen
-          navigation.navigate('ShopTab', {
-            screen: 'shop',
-          });
-        }
-      },
-    })}    
-  />
+<Tab.Screen 
+  name="ShopTab" 
+  component={ShopStackNavigator} 
+  options={{
+    headerShown: false,
+    title: 'Shop',
+    tabBarIcon: ({ color, size, focused }) => (
+      <View style={{
+        backgroundColor: focused ? '#eaf5ec' : 'transparent',
+        borderRadius: 25,
+        padding: 1,
+      }}>
+        <Ionicons 
+          name="storefront-outline" 
+          size={focused ? size + 2 : size} 
+          color={focused ? '#1a3c40' : color} 
+        />
+      </View>
+    ),
+    unmountOnBlur: true, // optional but helpful
+  }}
+  listeners={({ navigation }) => ({
+    tabPress: e => {
+      e.preventDefault();
+      navigation.reset({
+        index: 0,
+        routes: [
+          {
+            name: 'ShopTab',
+            state: {
+              index: 0,
+              routes: [{ name: 'shop' }],
+            },
+          },
+        ],
+      });
+    },
+  })}
+/>
 
 <Tab.Screen 
-  name="Cart" 
-  component={ShoppingCart} 
+  name="CartTab" 
+  component={CartStackNavigator} 
   options={{
     title: 'Cart',
     tabBarIcon: (props) => <CartTabIcon {...props} />,

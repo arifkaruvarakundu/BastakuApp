@@ -32,7 +32,7 @@ const ProductDetailView = ({ route, navigation }) => {
       try {
         const response = await axios.get(`${API_BASE_URL}/product_details/${productId}/`);
         const data = response.data;
-        console.log("data@@@@", data)
+        // console.log("data@@@@", data)
         setFetchedProduct(data);
         setVariants(data.variants);
         setSelectedVariant(data.variants[0]); // Default to first variant
@@ -114,18 +114,21 @@ const ProductDetailView = ({ route, navigation }) => {
     if (!selectedVariant?.id) return;
   
     const campaignVariants = fetchedProduct.variants.filter((variant) => variant.is_in_campaign);
-    console.log("Campaign Variants:", campaignVariants);
+    // console.log("Campaign Variants:", campaignVariants);
   
     if (campaignVariants.length > 0) {
       axios.get(`${API_BASE_URL}/campaigns/`)
         .then((response) => {
           console.log("Campaigns Data from API:", response.data);
+
+          const filteredCampaigns = response.data.filter((campaign) =>
+            !(campaign.has_ended) && !(campaign.current_quantity===0|| campaign.current_participants===0));
   
-          const relatedCampaign = response.data.find(
+          const relatedCampaign = filteredCampaigns.find(
             (campaign) => parseInt(campaign.variant.id) === selectedVariant.id
           );
   
-          console.log("Related Campaign:", relatedCampaign);
+          // console.log("Related Campaign:", relatedCampaign);
   
           if (relatedCampaign) {
             setCampaignDetails(relatedCampaign);
@@ -142,11 +145,11 @@ const ProductDetailView = ({ route, navigation }) => {
     //   alert("Please select a payment option.");
     //   return;
     // }
-    console.log("deal clicked")
+    // console.log("deal clicked")
   
     const selectedVariantDetails = selectedVariant;
 
-    console.log("selectedVariantDetails:",selectedVariantDetails)
+    // console.log("selectedVariantDetails:",selectedVariantDetails)
   
     // if (!selectedVariantDetails) {
     //   alert("No variant selected.");

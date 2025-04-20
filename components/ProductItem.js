@@ -168,11 +168,11 @@ const ProductItem = ({ navigation, categoryId, categoryName }) => {
           style={styles.dealImage}
           resizeMode="cover"
         />
+        {item.variants?.[0]?.is_in_campaign && (
         <View style={styles.discountBadge}>
-        <Text style={styles.discountText}>
-          {item.variants[0].campaign_discount_percentage}% OFF
-        </Text>
+          <Text style={styles.discountText}>campaign</Text>
         </View>
+        )}
       </View>
 
       {!localQuantities[item.id] ? (

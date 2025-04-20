@@ -24,7 +24,12 @@ const ActiveGroupDealStory = () => {
       const fetchCampaigns = async () => {
         try {
           const response = await axios.get(`${API_BASE_URL}/campaigns/`);
-          setCampaigns(response.data);
+          
+          // Filter out campaigns with 0 participants and 0 quantity
+          const filteredCampaigns = response.data.filter((campaign) =>
+            !(campaign.has_ended) && !(campaign.current_quantity===0|| campaign.current_participants===0));
+
+          setCampaigns(filteredCampaigns);
           setLoading(false);
         } catch (err) {
           setError(err.message);
@@ -37,7 +42,6 @@ const ActiveGroupDealStory = () => {
   );
 
   const navigation = useNavigation();
-
 
   const renderItem = ({ item }) => {
     const firstImage = item.variant?.variant_images?.[0]; // Safely get first image
@@ -78,7 +82,7 @@ const ActiveGroupDealStory = () => {
 
   return (
     <View style={styles.container}>
-      <Text>OnGoing Group Deals</Text>
+      <Text>OnGoing Campaigns</Text>
       <FlatList
         data={campaigns}
         keyExtractor={(item) => item.id}
