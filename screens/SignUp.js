@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'; // Import 
 import { useDispatch } from 'react-redux'; // Use dispatch to trigger actions
 import { setAuthenticated } from '../redux/authSlice'; // Ensure correct import path
 import API_BASE_URL from '../config'; // Ensure correct API path
+import { useTranslation } from 'react-i18next'; // Import translation hook
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -17,6 +18,8 @@ const SignUp = () => {
 
   const navigation = useNavigation(); // Initialize navigation
   const dispatch = useDispatch();
+  const { t } = useTranslation('SignIn_SignUp'); // Initialize translation
+  const { i18n } = useTranslation(); // Initialize i18n
 
   // Handle form input changes
   const handleInputChange = (name, value) => {
@@ -52,12 +55,12 @@ const SignUp = () => {
 
     // Validation checks
     if (!first_name || !last_name || !email || !password || !confirmPassword) {
-      Alert.alert('Error', 'Please fill in all fields.');
+      Alert.alert(t("fillFieldsUp"));
       return;
     }
 
     if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match.');
+      Alert.alert(t("passwordMismatch"));
       return;
     }
 
@@ -87,38 +90,38 @@ const SignUp = () => {
         await AsyncStorage.setItem('email', JSON.stringify(data.email)); // Ensure token is stored as a string
         await AsyncStorage.setItem('user_type', JSON.stringify(data.user_type)); // Ensure user_type is stored as a string
 
-        Alert.alert('Success', 'Sign up successful!');
+        Alert.alert(t("successUp"));
         navigation.navigate('Home'); // Navigate to home after success
       } else {
-        Alert.alert('Error', data.message || 'Something went wrong.');
+        Alert.alert('Error', data.message || t("error"));
       }
     } catch (error) {
       console.error('Sign up error:', error);
-      Alert.alert('Error', 'Network error. Please try again.');
+      Alert.alert(t("networkErrorUp"));
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Create an Account</Text>
+      <Text style={styles.header}>{t("titleUp")}</Text>
 
       <TextInput
         style={styles.input}
-        placeholder="First Name"
+        placeholder={t("firstNamePlaceholder")}
         value={formData.first_name}
         onChangeText={(text) => handleInputChange('first_name', text)}
       />
 
       <TextInput
         style={styles.input}
-        placeholder="Last Name"
+        placeholder={t("lastNamePlaceholder")}
         value={formData.last_name}
         onChangeText={(text) => handleInputChange('last_name', text)}
       />
 
       <TextInput
         style={styles.input}
-        placeholder="Email"
+        placeholder={t("emailPlaceholderUp")}
         keyboardType="email-address"
         value={formData.email}
         onChangeText={(text) => handleInputChange('email', text)}
@@ -126,7 +129,7 @@ const SignUp = () => {
 
       <TextInput
         style={styles.input}
-        placeholder="Password"
+        placeholder={t("passwordPlaceholderUp")}
         secureTextEntry
         value={formData.password}
         onChangeText={(text) => handleInputChange('password', text)}
@@ -134,21 +137,21 @@ const SignUp = () => {
 
       <TextInput
         style={styles.input}
-        placeholder="Confirm Password"
+        placeholder={t("confirmPasswordPlaceholder")}
         secureTextEntry
         value={formData.confirmPassword}
         onChangeText={(text) => handleInputChange('confirmPassword', text)}
       />
 
       <TouchableOpacity style={styles.button} onPress={handleSignUp}>
-        <Text style={styles.buttonText}>Sign Up</Text>
+        <Text style={styles.buttonText}>{t("buttonUp")}</Text>
       </TouchableOpacity>
 
       {/* Already Registered Section */}
       <View style={styles.footerContainer}>
-        <Text style={styles.footerText}>Already have an account? </Text>
+        <Text style={styles.footerText}>{t("footerTextUp")} </Text>
         <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
-          <Text style={styles.linkText}>SignIn</Text>
+          <Text style={styles.linkText}>{t("signinLink")}</Text>
         </TouchableOpacity>
       </View>
     </View>

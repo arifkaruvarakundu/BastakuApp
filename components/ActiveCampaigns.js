@@ -12,11 +12,13 @@ import { useFocusEffect } from '@react-navigation/native';
 import API_BASE_URL from '../config'
 import axios from "axios";
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 const ActiveGroupDealStory = () => {
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { t } = useTranslation('home');
 
   // You can uncomment and complete this effect to fetch campaigns
   useFocusEffect(
@@ -82,7 +84,7 @@ const ActiveGroupDealStory = () => {
 
   return (
     <View style={styles.container}>
-      <Text>OnGoing Campaigns</Text>
+      <Text>{t('ongoingCampaigns')}</Text>
       <FlatList
         data={campaigns}
         keyExtractor={(item) => item.id}

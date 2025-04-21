@@ -7,8 +7,10 @@ import CarouselHomePage from "../components/Carousel_home";
 import { CaurousalData as data } from "../utils/CarouselData";
 import CategoriesHome from "../components/Categories_home";
 
+
 const HomePage = () => {
   const navigation = useNavigation();
+  
   // const [refreshing, setRefreshing] = useState(false);
   // const onRefresh = useCallback(() => {
   //   setRefreshing(true);

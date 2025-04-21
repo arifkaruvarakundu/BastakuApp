@@ -12,6 +12,7 @@ import {
 import { AntDesign } from "@expo/vector-icons";
 import axios from 'axios'
 import API_BASE_URL from "../config"
+import { useTranslation } from 'react-i18next';
 
 const { width } = Dimensions.get("window");
 
@@ -19,6 +20,8 @@ const CategoriesShop = ({ navigation, fetchCategories, onCategorySelect }) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { i18n } = useTranslation();
+  const { t } = useTranslation('home');
 
   useEffect(() => {
     // If you have a real API, use this:
@@ -74,7 +77,7 @@ const CategoriesShop = ({ navigation, fetchCategories, onCategorySelect }) => {
         />
       </View>
       <Text style={styles.sellerName} numberOfLines={2}>
-        {item.name}
+        {i18n.language === "ar" ? item.name_ar : item.name_en}
       </Text>
       {/* <View style={styles.ratingContainer}>
         <AntDesign name="star" size={12} color="#FFD700" />
@@ -107,7 +110,7 @@ const CategoriesShop = ({ navigation, fetchCategories, onCategorySelect }) => {
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <Text style={styles.headerTitle}>Categories</Text>
+        <Text style={styles.headerTitle}>{t('categories')}</Text>
         {/* <TouchableOpacity onPress={handleViewAll} style={styles.viewAllButton}>
           <Text style={styles.viewAllText}>More</Text>
           <AntDesign name="right" size={16} color="#b6e4af" />

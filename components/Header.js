@@ -12,12 +12,16 @@ import { Feather } from "@expo/vector-icons";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import API_BASE_URL from "../config";
+import LanguageSelector from "./Language_detector"
+import { useTranslation } from 'react-i18next';
 
 const Header = () => {
   const navigation = useNavigation();
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState({ products: [], categories: [] });
+  
+  const { t } = useTranslation('home');
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
@@ -105,10 +109,10 @@ const Header = () => {
         <TouchableOpacity style={styles.iconContainer} onPress={() => setSearchOpen(!searchOpen)}>
           <Feather name="search" size={24} color="black" />
         </TouchableOpacity>
-
+        <LanguageSelector/>
         {/* Title */}
         <View style={styles.titleContainer}>
-          <Text style={styles.title}>BastaKU</Text>
+          <Text style={styles.title}>{t('BastaKU')}</Text>
         </View>
       </View>
 

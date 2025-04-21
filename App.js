@@ -1,3 +1,4 @@
+import './i18n';
 import React from 'react';
 import {StyleSheet} from "react-native"
 import { NavigationContainer } from '@react-navigation/native';
@@ -6,6 +7,7 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import store, { persistor } from './redux/store';
 import TabNavigator from './navigation/Tab'
+
 
 export default function App() {
   return (

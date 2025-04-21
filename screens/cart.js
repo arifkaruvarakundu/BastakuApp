@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
 import { updateCartItemQuantity, removeFromCart } from '../redux/cartSlice';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 const ShoppingCart = () => {
 
@@ -15,6 +16,10 @@ const ShoppingCart = () => {
   const navigation = useNavigation();
   // then in your component
   const cartItems = useSelector(selectCartItems);
+  console.log("cartItems:",cartItems);
+  const {i18n} = useTranslation();
+ 
+  const { t } = useTranslation("cart");
 
   const increaseQuantity = (item) => {
     dispatch(updateCartItemQuantity({ id: item.id, quantity: item.quantity + 1 }));
@@ -52,7 +57,7 @@ const ShoppingCart = () => {
       <View style={styles.itemContainer}>
         <Image source={{ uri: item.image }} style={styles.image} />
         <View style={styles.infoContainer}>
-          <Text style={styles.name}>{item.name}</Text>
+          <Text style={styles.name}>{i18n.language === "ar" ? item.name_ar : item.name_en}</Text>
           <Text style={styles.brand}>{item.brand}</Text>
           <Text style={styles.price}>${parseFloat(item.price).toFixed(2)}</Text>
         </View>
@@ -67,7 +72,7 @@ const ShoppingCart = () => {
             </TouchableOpacity>
           </View>
           <TouchableOpacity onPress={() => removeItem(item)}>
-            <Text style={styles.removeText}>Remove</Text>
+            <Text style={styles.removeText}>{t("remove")}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -76,9 +81,9 @@ const ShoppingCart = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>🛒 Your Cart</Text>
+      <Text style={styles.title}>{t("title")}</Text>
       {cartItems.length === 0 ? (
-        <Text style={styles.emptyText}>Your cart is empty.</Text>
+        <Text style={styles.emptyText}>{t("empty")}</Text>
       ) : (
         <>
           <FlatList
@@ -89,11 +94,11 @@ const ShoppingCart = () => {
           />
           <View style={styles.totalContainer}>
             <View style={styles.totalTextContainer}>
-              <Text style={styles.totalText}>Total:</Text>
+              <Text style={styles.totalText}>{t("total")}</Text>
               <Text style={styles.totalAmount}>${calculateTotal()}</Text>
             </View>
             <TouchableOpacity style={styles.checkoutButton} onPress={handleCheckout}>
-              <Text style={styles.checkoutButtonText}>Checkout</Text>
+              <Text style={styles.checkoutButtonText}>{t("checkout")}</Text>
             </TouchableOpacity>
           </View>
         </>

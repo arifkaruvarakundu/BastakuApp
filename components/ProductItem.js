@@ -12,6 +12,7 @@ import {
 import { AntDesign } from "@expo/vector-icons";
 import axios from "axios";
 import API_BASE_URL from "../config";
+import { useTranslation } from 'react-i18next';
 // import {useSelector, useDispatch} from 'react-redux';
 import { addToCart, removeFromCart, updateCartItemQuantity } from '../redux/cartSlice';
 
@@ -29,7 +30,8 @@ const ProductItem = ({ navigation, categoryId, categoryName }) => {
   const [renderCount, setRenderCount] = useState(5); // initial batch size
   const BATCH_SIZE = 5;
 
-
+  const { i18n } = useTranslation();
+  const { t } = useTranslation('shop');
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -170,7 +172,7 @@ const ProductItem = ({ navigation, categoryId, categoryName }) => {
         />
         {item.variants?.[0]?.is_in_campaign && (
         <View style={styles.discountBadge}>
-          <Text style={styles.discountText}>campaign</Text>
+          <Text style={styles.discountText}>{t("campaign")}</Text>
         </View>
         )}
       </View>
@@ -205,11 +207,11 @@ const ProductItem = ({ navigation, categoryId, categoryName }) => {
 
       <View style={styles.detailsContainer}>
         <Text style={styles.productName} numberOfLines={2}>
-          {item.product_name}
+          {i18n.language === "ar" ? item.product_name_ar : item.product_name_en}
         </Text>
 
         <View style={styles.priceContainer}>
-          <Text style={styles.campaignPrice}>KD: {parseFloat(item.variants[0].price).toFixed(3)}</Text>
+          <Text style={styles.campaignPrice}>{t("kd")}: {parseFloat(item.variants[0].price).toFixed(3)}</Text>
           {/* <Text style={styles.actualPrice}></Text> */}
         </View>
 
@@ -238,7 +240,7 @@ const ProductItem = ({ navigation, categoryId, categoryName }) => {
         </View> */}
 
         <Text style={styles.minOrderText}>
-          Campaign Price:{parseFloat(calculateCampaignPrice(item.variants[0].price, item.variants[0].campaign_discount_percentage)).toFixed(3)} KD
+        {t("campaignPrice")}: {parseFloat(calculateCampaignPrice(item.variants[0].price, item.variants[0].campaign_discount_percentage)).toFixed(3)} {t("kd")}
         </Text>
 
         {/* <TouchableOpacity
@@ -274,7 +276,7 @@ const ProductItem = ({ navigation, categoryId, categoryName }) => {
     <View style={styles.container}>
       <View style={styles.headerContainer}>
       <Text style={styles.headerTitle}>
-        {categoryId && !showAll ? categoryName : "All Products"}
+        {categoryId && !showAll ? categoryName : t("allProducts")}
       </Text>
 
       <TouchableOpacity
@@ -283,7 +285,7 @@ const ProductItem = ({ navigation, categoryId, categoryName }) => {
           style={[styles.viewAllButton, showAll && { opacity: 0.5 }]}
         >
         <Text style={styles.viewAllText}>
-          View All
+        {t("viewAll")}
         </Text>
 
           <AntDesign name="right" size={16} color="#0066CC" />

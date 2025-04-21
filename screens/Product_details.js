@@ -12,6 +12,7 @@ import {
 import axios from 'axios';
 import API_BASE_URL from '../config';
 import { useSelector, useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { updateCartItemQuantity, addToCart } from '../redux/cartSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -26,6 +27,9 @@ const ProductDetailView = ({ route, navigation }) => {
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [campaignDetails, setCampaignDetails] = useState(null);
+
+  const { t } = useTranslation('ProductDetails');
+  const { i18n } = useTranslation();
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -200,7 +204,7 @@ const ProductDetailView = ({ route, navigation }) => {
     return (
       <View style={styles.loaderContainer}>
         <ActivityIndicator size="large" color="#228B22" />
-        <Text style={styles.loadingText}>Loading product details...</Text>
+        <Text style={styles.loadingText}>{t("loading")}</Text>
       </View>
     );
   }
@@ -227,13 +231,13 @@ const ProductDetailView = ({ route, navigation }) => {
       <View style={styles.detailsContainer}>
       <View style={styles.topRow}>
   <View style={styles.leftInfo}>
-    <Text style={styles.title}>{fetchedProduct.product_name}</Text>
+    <Text style={styles.title}>{i18n.language === "ar" ? fetchedProduct.product_name_ar : fetchedProduct.product_name_en}</Text>
     <Text style={styles.price}>${selectedVariant.price}</Text>
   </View>
 
   <View style={styles.rightInfo}>
     {/* Brand Selection (Now Inline) */}
-    <Text style={styles.sectionTitle}>Brand</Text>
+    <Text style={styles.sectionTitle}>{t("brand")}</Text>
     <View style={styles.brandOptions}>
       {uniqueBrands.map((brand) => (
         <TouchableOpacity
@@ -281,16 +285,16 @@ const ProductDetailView = ({ route, navigation }) => {
           </View>
 
           <TouchableOpacity style={styles.cartButton} onPress={handleAddToCart}>
-            <Text style={styles.cartButtonText}>Add to Cart</Text>
+            <Text style={styles.cartButtonText}>{t("add_to_cart")}</Text>
           </TouchableOpacity>
         </View>
         {selectedVariant?.is_in_campaign && (
             <View style={styles.groupProgressSection}>
               <View style={styles.groupInfo}>
-                <Text style={styles.groupTitle}>Group Campaign Active</Text>
+                <Text style={styles.groupTitle}>{t("group_campaign_active")}</Text>
                 <Text style={styles.groupStats}>
-                  <Text style={styles.boldText}>{currentParticipants}</Text> participants ·{' '}
-                  <Text style={styles.boldText}>{quantityLeft}</Text> more to unlock campaign price
+                  <Text style={styles.boldText}>{currentParticipants}</Text> {t("participants")} ·{' '}
+                  <Text style={styles.boldText}>{quantityLeft}</Text> {t("more_to_unlock")}
                 </Text>
               </View>
 
@@ -299,8 +303,8 @@ const ProductDetailView = ({ route, navigation }) => {
               </View>
 
               <View style={styles.progressLabels}>
-                <Text style={styles.labelText}>Current: {currentQuantity}</Text>
-                <Text style={styles.labelText}>Target: {targetQuantity}</Text>
+                <Text style={styles.labelText}>{t("current")}: {currentQuantity}</Text>
+                <Text style={styles.labelText}>{t("target")}: {targetQuantity}</Text>
               </View>
             </View>
           )}
@@ -319,19 +323,19 @@ const ProductDetailView = ({ route, navigation }) => {
             style={styles.dealBoxFixed}
             onPress={() => handleDealClick("basic", navigation)}
           >
-            <Text style={styles.dealText}>Early Bird - 5% Extra Off</Text>
+            <Text style={styles.dealText}>{t("early_bird")}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.dealBoxFixed}
             onPress={() => handleDealClick("premium", navigation)}
           >
-            <Text style={styles.dealText}>VIP Deal - 25% Extra Off</Text>
+            <Text style={styles.dealText}>{t("vip_deal")}</Text>
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.sectionTitle}>Description</Text>
-        <Text style={styles.description}>{fetchedProduct.description}</Text>
+        <Text style={styles.sectionTitle}>{t("description")}</Text>
+        <Text style={styles.description}>{i18n.language === "ar" ? fetchedProduct.description_ar : fetchedProduct.description_en}</Text>
       </View>
     </ScrollView>
   );

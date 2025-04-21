@@ -15,10 +15,12 @@ import ShoppingCart from '../screens/Cart';
 import { selectCartCount } from '../redux/cartSlice';
 import CartTabIcon from '../components/Cart_tab_Icon';
 import { StackActions } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 const Tab = createBottomTabNavigator();
 
 export default function TabNavigator() {
+  const { t } = useTranslation('home');
 
   const isAuthenticated = useSelector(state=> state.auth.isAuthenticated)
 
@@ -53,7 +55,7 @@ export default function TabNavigator() {
         component={HomeStackNavigator}
         options={{
           headerShown: false,
-          title: 'Home',
+          title: t('home'),
           tabBarIcon: ({ color, size, focused }) => (
             <View style={{
               backgroundColor: focused ? '#eaf5ec' : 'transparent',
@@ -75,7 +77,7 @@ export default function TabNavigator() {
   component={ShopStackNavigator} 
   options={{
     headerShown: false,
-    title: 'Shop',
+    title: t('shop'),
     tabBarIcon: ({ color, size, focused }) => (
       <View style={{
         backgroundColor: focused ? '#eaf5ec' : 'transparent',
@@ -114,12 +116,10 @@ export default function TabNavigator() {
   name="CartTab" 
   component={CartStackNavigator} 
   options={{
-    title: 'Cart',
+    title: t('cart'),
     tabBarIcon: (props) => <CartTabIcon {...props} />,
   }} 
 />
-
-
 
   {isAuthenticated ? (
     <Tab.Screen 
@@ -127,7 +127,7 @@ export default function TabNavigator() {
       component={AccountStackNavigator} 
       options={{
         headerShown: false,
-        title: 'Account',
+        title: t('account'),
         tabBarIcon: ({ color, size, focused }) => (
           <View style={{
             backgroundColor: focused ? '#eaf5ec' : 'transparent',
@@ -149,7 +149,7 @@ export default function TabNavigator() {
         name="SignUp" 
         component={SignUp} 
         options={{
-          title: 'Sign Up',
+          title: t('signUp'),
           tabBarIcon: ({ color, size, focused }) => (
             <View style={{
               backgroundColor: focused ? '#eaf5ec' : 'transparent',
@@ -169,7 +169,7 @@ export default function TabNavigator() {
         name="SignIn" 
         component={SignIn} 
         options={{
-          title: 'Sign In',
+          title: t('signIn'),
           tabBarIcon: ({ color, size, focused }) => (
             <View style={{
               backgroundColor: focused ? '#eaf5ec' : 'transparent',

@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'; // Import 
 import {setAuthenticated} from '../redux/authSlice';
 import API_BASE_URL from "../config";
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 export default function Login({ navigation }) {
   const [formData, setFormData] = useState({
@@ -21,17 +22,21 @@ export default function Login({ navigation }) {
 
   const dispatch = useDispatch()
 
+  const {i18n} = useTranslation();
+   
+  const { t } = useTranslation("SignIn_SignUp");
+
   const handleLogin = async () => {
     const { email, password } = formData;
     if (!email || !password) {
-      Alert.alert('Error', 'Please fill in both fields.');
+      Alert.alert(t("fillFields"));
       return;
     }
 
     // Validate email format using regex
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     if (!emailRegex.test(email)) {
-      Alert.alert('Invalid email', 'Please enter a valid email address.');
+      Alert.alert(t("invalidEmail"));
       return;
     }
 
@@ -52,7 +57,7 @@ export default function Login({ navigation }) {
         await AsyncStorage.setItem('email', data.email)
         await AsyncStorage.setItem('user_type', JSON.stringify(data.user_type))
         // If login is successful, handle successful login logic
-        Alert.alert('Login Successful');
+        Alert.alert(t("success"));
         
         // You may want to store the authentication token in AsyncStorage or context
         // await AsyncStorage.setItem('access_token', data.token);
@@ -61,21 +66,21 @@ export default function Login({ navigation }) {
         navigation.navigate('HomeTab', { screen: 'Home' });
       } else {
         // If login fails, show error message from response
-        Alert.alert('Login Failed', data.message || 'Invalid email or password.');
+        Alert.alert(t("failed"), data.message || t("invalidCredentials"));
       }
     } catch (error) {
       console.error('Login error:', error);
-      Alert.alert('Network Error', 'There was an error while logging in. Please try again later.');
+      Alert.alert(t("networkError"));
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Sign In</Text>
+      <Text style={styles.header}>{t("title")}</Text>
 
       <TextInput
         style={styles.input}
-        placeholder="Email"
+        placeholder={t("emailPlaceholder")}
         value={formData.email}
         onChangeText={(value) => handleChange('email', value)}
         keyboardType="email-address"
@@ -84,20 +89,20 @@ export default function Login({ navigation }) {
 
       <TextInput
         style={styles.input}
-        placeholder="Password"
+        placeholder={t("passwordPlaceholder")}
         value={formData.password}
         onChangeText={(value) => handleChange('password', value)}
         secureTextEntry
       />
 
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Sign In</Text>
+        <Text style={styles.buttonText}>{t("button")}</Text>
       </TouchableOpacity>
 
       <View style={styles.footerContainer}>
-        <Text style={styles.footerText}>Don't have an account? </Text>
+        <Text style={styles.footerText}>{t("footerText")} </Text>
         <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-          <Text style={styles.linkText}>Sign Up</Text>
+          <Text style={styles.linkText}>{t("signupLink")}</Text>
         </TouchableOpacity>
       </View>
     </View>
