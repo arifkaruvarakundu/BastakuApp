@@ -15,6 +15,7 @@ import {
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import API_BASE_URL from '../config';
+import { useTranslation } from 'react-i18next';
 
 const AddressScreen = () => {
   const [address, setAddress] = useState({
@@ -29,6 +30,7 @@ const AddressScreen = () => {
   });
 
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation('Account'); // Use the 'Account' namespace for translations
 
   useEffect(() => {
     fetchAddress();
@@ -40,7 +42,7 @@ const AddressScreen = () => {
       token = token?.replace(/^"|"$/g, '');
 
       if (!token) {
-        Alert.alert('Authentication Error', 'User token not found.');
+        Alert.alert(t("authenticationError"), t("userTokenNotFound"));
         return;
       }
 
@@ -65,7 +67,7 @@ const AddressScreen = () => {
       });
     } catch (error) {
       console.error('Failed to fetch address:', error?.response?.data || error.message);
-      Alert.alert('Error', 'Unable to load address data.');
+      Alert.alert(t("errorLoading"));
     } finally {
       setLoading(false);
     }
@@ -81,7 +83,7 @@ const AddressScreen = () => {
       token = token?.replace(/^"|"$/g, '');
   
       if (!token) {
-        Alert.alert('Authentication Error', 'User token not found.');
+        Alert.alert(t("authenticationError"));
         return;
       }
   
@@ -93,10 +95,10 @@ const AddressScreen = () => {
         },
       });
   
-      Alert.alert('Success', 'Address updated successfully.');
+      Alert.alert(t("success"), t("addressUpdated"));
     } catch (error) {
       console.error('Error submitting address:', error?.response?.data || error.message);
-      Alert.alert('Error', error?.response?.data?.error || 'Something went wrong.');
+      Alert.alert(t("error"), error?.response?.data?.error || t("genericError"));
     }
   };
 
@@ -116,11 +118,11 @@ const AddressScreen = () => {
         keyboardVerticalOffset={100}
       >
         <ScrollView contentContainerStyle={styles.scroll}>
-          <Text style={styles.title}>Edit Address</Text>
+          <Text style={styles.title}>{t('editAddress')}</Text>
 
           {Object.entries(address).map(([key, value]) => (
             <View key={key} style={styles.inputWrapper}>
-              <Text style={styles.label}>{key.replace(/_/g, ' ').toUpperCase()}</Text>
+              <Text style={styles.label}>{t(key)}</Text>
               <TextInput
                 style={styles.input}
                 value={value}
@@ -130,14 +132,14 @@ const AddressScreen = () => {
                   key.includes('phone') || key.includes('zip') ? 'phone-pad' : 'default'
                 }
                 autoCapitalize="none"
-                placeholder={`Enter ${key.replace(/_/g, ' ')}`}
+                placeholder={t(key)}
                 placeholderTextColor="#aaa"
               />
             </View>
           ))}
 
           <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-            <Text style={styles.buttonText}>Save Changes</Text>
+            <Text style={styles.buttonText}>{t('saveChanges')}</Text>
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>

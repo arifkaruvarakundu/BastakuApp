@@ -1,0 +1,20 @@
+{
+    "start_campaign_heading": "ابدأ حملة جديدة",
+    "campaign_title": "عنوان الحملة",
+    "volume": "الحجم (لتر)",
+    "weight": "الوزن (كجم)",
+    "your_price": "سعرك (بالدينار)",
+    "my_quantity": "كميتي",
+    "progress": "التقدم",
+    "more_to_unlock": "متبقي {{amount}} كجم لفتح العرض!",
+    "target_achieved": "تم الوصول إلى الهدف!",
+    "total_amount": "المبلغ الإجمالي (بالدينار)",
+    "start_campaign": "ابدأ الحملة",
+    "loading": "جارٍ التحميل...",
+    "success": "نجاح",
+    "campaign_started": "تم بدء الحملة بنجاح!",
+    "error": "خطأ",
+    "campaign_failed": "فشل في بدء الحملة.",
+    "something_wrong": "حدث خطأ ما."
+  }
+  

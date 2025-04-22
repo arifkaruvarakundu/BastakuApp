@@ -13,12 +13,12 @@ import { AntDesign } from "@expo/vector-icons";
 import axios from "axios";
 import API_BASE_URL from "../config";
 import { useTranslation } from 'react-i18next';
-// import {useSelector, useDispatch} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 import { addToCart, removeFromCart, updateCartItemQuantity } from '../redux/cartSlice';
 
 const { width } = Dimensions.get("window");
 
-const ProductItem = ({ navigation, categoryId, categoryName }) => {
+const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,6 +32,7 @@ const ProductItem = ({ navigation, categoryId, categoryName }) => {
 
   const { i18n } = useTranslation();
   const { t } = useTranslation('shop');
+  const dispatch = useDispatch()
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -65,32 +66,65 @@ const ProductItem = ({ navigation, categoryId, categoryName }) => {
     }
   };
   
-
   // const handleAddToCart = (product) => {
   //   dispatch(addToCart({ ...product, quantity: 1 }));
   // };
 
-  const handleIncrease = (productId) => {
-    setLocalQuantities(prev => ({
+  // const handleIncrease = (productId) => {
+  //   setLocalQuantities(prev => ({
+  //     ...prev,
+  //     [productId]: (prev[productId] || 1) + 1
+  //   }));
+  // };
+
+  const handleIncrease = (item) => {
+    const currentQty = localQuantities[item.id] || 0;
+
+    console.log("item", item)
+  
+    setLocalQuantities((prev) => ({
       ...prev,
-      [productId]: (prev[productId] || 1) + 1
+      [item.id]: currentQty + 1,
     }));
+  
+    const itemToAdd = {
+      id: item.id,
+      productId: item.productId || item.id,
+      name: item.product_name,
+      brand: item.variants?.[0]?.brand,
+      price: item.variants?.[0]?.price,
+      image: item.variants?.[0]?.variant_images?.[0]?.image_url || '',
+      quantity: currentQty + 1,
+      liter: item.variants?.[0]?.liter,
+      weight: item.variants?.[0]?.weight,
+    };
+  
+    if (currentQty === 0) {
+      dispatch(addToCart(itemToAdd));
+    } else {
+      dispatch(updateCartItemQuantity({ id: item.id, quantity: currentQty + 1 }));
+    }
   };
   
-  const handleDecrease = (productId) => {
-    setLocalQuantities(prev => {
-      const currentQty = prev[productId] || 1;
-      if (currentQty > 1) {
-        return {
-          ...prev,
-          [productId]: currentQty - 1
-        };
-      } else {
-        const updated = { ...prev };
-        delete updated[productId];
-        return updated;
-      }
-    });
+  const handleDecrease = (item) => {
+    const currentQty = localQuantities[item.id];
+  
+    if (!currentQty) return;
+  
+    if (currentQty === 1) {
+      const updatedQuantities = { ...localQuantities };
+      delete updatedQuantities[item.id];
+      setLocalQuantities(updatedQuantities);
+  
+      dispatch(removeFromCart(item.id));
+    } else {
+      setLocalQuantities((prev) => ({
+        ...prev,
+        [item.id]: currentQty - 1,
+      }));
+  
+      dispatch(updateCartItemQuantity({ id: item.id, quantity: currentQty - 1 }));
+    }
   };
   
   useEffect(() => {
@@ -177,7 +211,7 @@ const ProductItem = ({ navigation, categoryId, categoryName }) => {
         )}
       </View>
 
-      {!localQuantities[item.id] ? (
+      {/* {!localQuantities[item.id] ? (
         <TouchableOpacity
           style={styles.addToCartButton}
           onPress={() => handleIncrease(item.id)}
@@ -200,6 +234,34 @@ const ProductItem = ({ navigation, categoryId, categoryName }) => {
             {localQuantities[item.id]}
           </Text>
           <TouchableOpacity onPress={() => handleIncrease(item.id)}>
+            <AntDesign name="pluscircleo" size={24} color="#499c5d" />
+          </TouchableOpacity>
+        </View>
+      )} */}
+
+      {!localQuantities[item.id] ? (
+        <TouchableOpacity
+          style={styles.addToCartButton}
+          onPress={() => handleIncrease(item)}
+        >
+          <AntDesign name="pluscircle" size={24} color="#499c5d" />
+        </TouchableOpacity>
+      ) : (
+        <View style={styles.quantityControl}>
+          <TouchableOpacity onPress={() => handleDecrease(item)}>
+            <AntDesign name="minuscircleo" size={24} color="#499c5d" />
+          </TouchableOpacity>
+          <Text style={{
+            marginHorizontal: 10,
+            fontSize: 16,
+            fontWeight: "bold",
+            color: "#333",
+            minWidth: 20,
+            textAlign: "center"
+          }}>
+            {localQuantities[item.id]}
+          </Text>
+          <TouchableOpacity onPress={() => handleIncrease(item)}>
             <AntDesign name="pluscircleo" size={24} color="#499c5d" />
           </TouchableOpacity>
         </View>

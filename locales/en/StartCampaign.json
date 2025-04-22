@@ -1,0 +1,20 @@
+{
+    "start_campaign_heading": "Start a New Campaign",
+    "campaign_title": "Campaign Title",
+    "volume": "Volume (Litre)",
+    "weight": "Weight (Kg)",
+    "your_price": "Your Price (in KD)",
+    "my_quantity": "My Quantity",
+    "progress": "Progress",
+    "more_to_unlock": "{{amount}} Kg more to unlock!",
+    "target_achieved": "Target Achieved!",
+    "total_amount": "Total Amount (in KD)",
+    "start_campaign": "Start Campaign",
+    "loading": "Loading...",
+    "success": "Success",
+    "campaign_started": "Campaign started successfully!",
+    "error": "Error",
+    "campaign_failed": "Failed to start the campaign.",
+    "something_wrong": "Something went wrong."
+  }
+  

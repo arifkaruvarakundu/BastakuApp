@@ -315,7 +315,7 @@ const ProductDetailView = ({ route, navigation }) => {
             onPress={() => handleDealClick("free", navigation)}
           >
             <Text style={styles.dealText}>
-              {fetchedProduct?.is_in_campaign ? 'Join Free' : 'Start Free'}
+              {fetchedProduct?.is_in_campaign ? t("join_free") : t("start_free")}
             </Text>
           </TouchableOpacity>
 

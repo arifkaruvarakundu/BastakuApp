@@ -12,11 +12,13 @@ import OrdersScreen from '../screens/Orders_screen';
 import AccountCampaigns from '../screens/Campaigns_screen'
 import ShoppingCart from '../screens/Cart';
 import ShopCheckoutScreen from '../screens/Checkout_screen';
+import { useTranslation } from 'react-i18next';
 
 const Stack = createNativeStackNavigator();
 
 // Home Stack
 export const HomeStackNavigator = () => {
+
   return (
     <Stack.Navigator>
       <Stack.Screen 
@@ -30,6 +32,7 @@ export const HomeStackNavigator = () => {
 
 // Shop Stack
 export const ShopStackNavigator = () => {
+  const { t } = useTranslation('Stack'); 
   return (
     <Stack.Navigator>
       <Stack.Screen 
@@ -40,14 +43,17 @@ export const ShopStackNavigator = () => {
       <Stack.Screen 
         name="ProductDetails" 
         component={ProductDetailView} 
+        options={() => ({ title: t('productDetails') })}
       />
       <Stack.Screen 
         name="CampaignDetails" 
-        component={CampaignDetailView} 
+        component={CampaignDetailView}
+        options={() => ({ title: t('campaignDetails') })}
       />
       <Stack.Screen 
         name="StartCampaign" 
         component={StartCampaignView} 
+        options={() => ({ title: t('startCampaign') })}
       />
     </Stack.Navigator>
   );
@@ -55,6 +61,7 @@ export const ShopStackNavigator = () => {
 
 // Accont Stack
 export const AccountStackNavigator = () =>{
+  const { t } = useTranslation('Stack');
   return(
     <Stack.Navigator>
       <Stack.Screen
@@ -65,14 +72,17 @@ export const AccountStackNavigator = () =>{
       <Stack.Screen
         name = "Address"
         component = {AddressScreen}
+        options={() => ({ title: t('address') })}
       />
       <Stack.Screen
         name = "OrdersScreen"
         component = {OrdersScreen}
+        options={() => ({ title: t('orders') })}
       />
       <Stack.Screen
         name = "CampaignsScreen"
         component = {AccountCampaigns}
+        options={() => ({ title: t('campaigns') })}
       />
     </ Stack.Navigator>
   );

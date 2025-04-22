@@ -22,6 +22,7 @@ const Header = () => {
   const [suggestions, setSuggestions] = useState({ products: [], categories: [] });
   
   const { t } = useTranslation('home');
+  const {i18n} = useTranslation()
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
@@ -55,7 +56,7 @@ const Header = () => {
     <View style={styles.suggestionBox}>
       {suggestions.products.length > 0 && (
         <>
-          <Text style={styles.suggestionTitle}>Products</Text>
+          <Text style={styles.suggestionTitle}>{t("products")}</Text>
           {suggestions.products.map((item, index) => (
             <TouchableOpacity
               key={`p-${index}`}
@@ -69,7 +70,7 @@ const Header = () => {
               }}
             >
               <Feather name="box" size={18} color="#444" style={{ marginRight: 8 }} />
-              <Text style={styles.suggestionItem}>{item.product_name}</Text>
+              <Text style={styles.suggestionItem}>{i18n.language === "ar" ? item.product_name_ar : item.product_name_en}</Text>
             </TouchableOpacity>
           ))}
         </>
@@ -77,7 +78,7 @@ const Header = () => {
   
       {suggestions.categories.length > 0 && (
         <>
-          <Text style={styles.suggestionTitle}>Categories</Text>
+          <Text style={styles.suggestionTitle}>{t("categories")}</Text>
           {suggestions.categories.map((item, index) => (
             <TouchableOpacity
               key={`c-${index}`}
@@ -94,7 +95,7 @@ const Header = () => {
               }}
             >
               <Feather name="tag" size={18} color="#444" style={{ marginRight: 8 }} />
-              <Text style={styles.suggestionItem}>{item.name}</Text>
+              <Text style={styles.suggestionItem}>{i18n.language === "ar" ? item.name_ar : item.name_en}</Text>
             </TouchableOpacity>
           ))}
         </>

@@ -13,6 +13,7 @@ import axios from 'axios';
 import API_BASE_URL from '../config';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
 
 const OrdersScreen = () => {
   const [orders, setOrders] = useState([]);
@@ -20,6 +21,8 @@ const OrdersScreen = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+
+  const { t } = useTranslation('Account');
 
   const fetchOrders = useCallback(async () => {
     try {
@@ -74,7 +77,7 @@ const OrdersScreen = () => {
   const renderOrderItem = ({ item }) => (
     <TouchableOpacity style={styles.orderCard}>
       <View style={styles.orderHeader}>
-        <Text style={styles.orderId}>Order #{item.id}</Text>
+        <Text style={styles.orderId}>{t("order")} #{item.id}</Text>
         <Text style={[styles.orderStatus, { color: getStatusColor(item.payment_status) }]}>
           {item.payment_status}
         </Text>
@@ -84,7 +87,7 @@ const OrdersScreen = () => {
         <Text style={styles.orderDate}>
           {new Date(item.created_at).toLocaleDateString()}
         </Text>
-        <Text style={styles.orderTotal}>Total: {item.total_price} KD</Text>
+        <Text style={styles.orderTotal}>{t("total")}: {item.total_price} KD</Text>
       </View>
   
       <View style={styles.itemRow}>
@@ -101,7 +104,7 @@ const OrdersScreen = () => {
   
       <View style={styles.orderFooter}>
         <TouchableOpacity style={styles.trackButton}>
-          <Text style={styles.trackButtonText}>Track Order</Text>
+          <Text style={styles.trackButtonText}>{t("track_order")}</Text>
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
@@ -110,7 +113,7 @@ const OrdersScreen = () => {
   const renderCampaignOrderItem = ({ item }) => (
     <TouchableOpacity style={styles.orderCard}>
       <View style={styles.orderHeader}>
-        <Text style={styles.orderId}>Campaign Order #{item.id}</Text>
+        <Text style={styles.orderId}>{t("campaign_orders")} #{item.id}</Text>
         <Text style={[styles.orderStatus, { color: getStatusColor(item.payment_status) }]}>
           {item.payment_status}
         </Text>
@@ -120,7 +123,7 @@ const OrdersScreen = () => {
         <Text style={styles.orderDate}>
           {new Date(item.created_at).toLocaleDateString()}
         </Text>
-        <Text style={styles.orderTotal}>Total: ${item.total_price}</Text>
+        <Text style={styles.orderTotal}>{t("total")}: ${item.total_price}</Text>
       </View>
 
       <View style={styles.itemRow}>
@@ -137,7 +140,7 @@ const OrdersScreen = () => {
 
       <View style={styles.orderFooter}>
         <TouchableOpacity style={styles.trackButton}>
-          <Text style={styles.trackButtonText}>Track Campaign</Text>
+          <Text style={styles.trackButtonText}>{t("track_campaign")}</Text>
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
@@ -147,7 +150,7 @@ const OrdersScreen = () => {
     return (
       <View style={styles.loaderContainer}>
         <ActivityIndicator size="large" color="#228B22" />
-        <Text style={styles.loadingText}>Loading your orders...</Text>
+        <Text style={styles.loadingText}>{t("loading_orders")}</Text>
       </View>
     );
   }
@@ -158,7 +161,7 @@ const OrdersScreen = () => {
         <Ionicons name="alert-circle-outline" size={48} color="#FF3B30" />
         <Text style={styles.errorText}>{error}</Text>
         <TouchableOpacity style={styles.retryButton} onPress={fetchOrders}>
-          <Text style={styles.retryButtonText}>Retry</Text>
+          <Text style={styles.retryButtonText}>{t("retry")}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -166,9 +169,9 @@ const OrdersScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Campaign Orders</Text>
+      <Text style={styles.title}>{t("campaign_orders")}</Text>
       {campaignOrders.length === 0 ? (
-        <Text style={styles.emptyText}>No campaign orders found</Text>
+        <Text style={styles.emptyText}>{t("no_campaign_orders")}</Text>
       ) : (
         <FlatList
           data={campaignOrders}
@@ -178,9 +181,9 @@ const OrdersScreen = () => {
         />
       )}
 
-      <Text style={styles.title}>Regular Orders</Text>
+      <Text style={styles.title}>{t("regular_orders")}</Text>
       {orders.length === 0 ? (
-        <Text style={styles.emptyText}>No regular orders found</Text>
+        <Text style={styles.emptyText}>{t("no_regular_orders")}</Text>
       ) : (
         <FlatList
           data={orders}

@@ -61,6 +61,7 @@ const CategoriesHome = ({ navigation, fetchCategories, onCategorySelect }) => {
       params: {
         categoryId: category.id,
         categoryName: category.name,
+        categoryNameAR: category.name_ar
       },
     });
   };

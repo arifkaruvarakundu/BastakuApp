@@ -12,10 +12,12 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import API_BASE_URL from "../config";
+import { useTranslation } from "react-i18next";
 
 const AccountCampaigns = () => {
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation("Account");
 
   useEffect(() => {
     const fetchCampaigns = async () => {
@@ -52,9 +54,9 @@ const AccountCampaigns = () => {
           },
         }
       );
-      Alert.alert("Success", "Campaign cancelled.");
+      Alert.alert(t("success"), t("cancelSuccess"));
     } catch (error) {
-      Alert.alert("Error", "Could not cancel campaign.");
+      Alert.alert(t("error"), t("cancelError"));
     }
   };
 
@@ -73,14 +75,14 @@ const AccountCampaigns = () => {
     return (
       <View style={styles.card}>
         <View style={styles.headerRow}>
-          <Text style={styles.title}>Campaign #{item.id}</Text>
+          <Text style={styles.title}>{t("campaign")} #{item.id}</Text>
           <Text
             style={[
               styles.status,
               { color: item.is_active ? "#34C759" : "#FF3B30" },
             ]}
           >
-            {item.is_active ? "Active" : "Inactive"}
+            {item.is_active ? t("active") : t("inactive")}
           </Text>
         </View>
 
@@ -92,29 +94,29 @@ const AccountCampaigns = () => {
         )}
 
         <View style={styles.detailRow}>
-          <Text style={styles.label}>Title:</Text>
+          <Text style={styles.label}>{t("title")}:</Text>
           <Text style={styles.value}>{item.title}</Text>
         </View>
         <View style={styles.detailRow}>
-          <Text style={styles.label}>Volume:</Text>
+          <Text style={styles.label}>{t("volume")}:</Text>
           <Text style={styles.value}>{literOrWeight}</Text>
         </View>
         <View style={styles.detailRow}>
-          <Text style={styles.label}>Discounted Price:</Text>
+          <Text style={styles.label}>{t("discountedPrice")}:</Text>
           <Text style={styles.value}>${item.discounted_price}</Text>
         </View>
         <View style={styles.detailRow}>
-          <Text style={styles.label}>Ordered Quantity:</Text>
+          <Text style={styles.label}>{t("orderedQty")}:</Text>
           <Text style={styles.value}>{item.current_quantity}</Text>
         </View>
         <View style={styles.detailRow}>
-          <Text style={styles.label}>Required Quantity:</Text>
+          <Text style={styles.label}>{t("requiredQty")}:</Text>
           <Text style={styles.value}>
             {item.variant.minimum_order_quantity_for_offer}
           </Text>
         </View>
         <View style={styles.detailRow}>
-          <Text style={styles.label}>Start Date:</Text>
+          <Text style={styles.label}>{t("startDate")}:</Text>
           <Text style={styles.value}>
             {new Date(item.start_time).toLocaleDateString()}
           </Text>
@@ -124,14 +126,14 @@ const AccountCampaigns = () => {
           <View style={[styles.progressBar, { width: `${progress}%` }]} />
         </View>
         <Text style={styles.progressLabel}>
-          Progress: {Math.floor(progress)}%
+          {t("progress")}: {Math.floor(progress)}%
         </Text>
 
         <TouchableOpacity
           style={styles.cancelButton}
           onPress={() => handleCancel(item.id)}
         >
-          <Text style={styles.cancelButtonText}>Cancel Campaign</Text>
+          <Text style={styles.cancelButtonText}>{t("cancelCampaign")}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -141,14 +143,14 @@ const AccountCampaigns = () => {
     return (
       <View style={styles.loaderContainer}>
         <ActivityIndicator size="large" color="#228B22" />
-        <Text style={styles.loadingText}>Loading your campaigns...</Text>
+        <Text style={styles.loadingText}>{t("loading")}</Text>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.screenTitle}>Your Campaigns ({campaigns.length})</Text>
+      <Text style={styles.screenTitle}>{t("yourCampaigns")} ({campaigns.length})</Text>
       <FlatList
         data={campaigns}
         renderItem={renderCampaign}

@@ -6,11 +6,15 @@ import { setNotAuthenticated } from '../redux/authSlice';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { clearCart } from '../redux/cartSlice';
+import { useTranslation } from 'react-i18next';
 
 const Account = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+  
+  const { t } = useTranslation('Account'); // Use the 'Account' namespace for translations
+  const {i18n} = useTranslation(); // Use the 'Account' namespace for translations
 
   const handleLogout = async () => {
     try {
@@ -19,7 +23,7 @@ const Account = () => {
 
       dispatch(clearCart());
       dispatch(setNotAuthenticated());
-      Alert.alert('Logged Out', 'You have been logged out successfully.');
+      Alert.alert(t("loggedOut"), t("logoutMessage"));
       navigation.navigate('HomeTab', { screen: 'Home' });
     } catch (error) {
       console.log('Error during logout:', error);
@@ -35,13 +39,13 @@ const Account = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>My Account</Text>
+      <Text style={styles.header}>{t("header")}</Text>
 
       <View style={styles.cardContainer}>
         {options.map((item, index) => (
           <TouchableOpacity key={index} style={styles.optionCard} onPress={item.onPress}>
             <Ionicons name={item.icon} size={24} color="#555" />
-            <Text style={styles.optionText}>{item.label}</Text>
+            <Text style={styles.optionText}>{t(`${item.label}`)}</Text>
             <Ionicons name="chevron-forward" size={20} color="#999" />
           </TouchableOpacity>
         ))}
@@ -50,7 +54,7 @@ const Account = () => {
       {isAuthenticated && (
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Ionicons name="log-out-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
-          <Text style={styles.logoutText}>Logout</Text>
+          <Text style={styles.logoutText}>{t("logout")}</Text>
         </TouchableOpacity>
       )}
     </View>

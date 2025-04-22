@@ -3,7 +3,8 @@ import { View, Text, Image, ScrollView, ActivityIndicator, TouchableOpacity, Sty
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import axios from 'axios';
-import API_BASE_URL from '../config'
+import API_BASE_URL from '../config';
+import { useTranslation } from 'react-i18next';
 
 const CampaignDetailView = () => {
   const [variant, setVariant] = useState(null);
@@ -15,6 +16,8 @@ const CampaignDetailView = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [paymentOption, setPaymentOption] = useState('');
   const [isWholesaler, setIsWholesaler] = useState(false);
+
+  const { t } = useTranslation('CampaignDetail');
   const route = useRoute();
   const navigation = useNavigation();
   const { id } = route.params;
@@ -89,13 +92,13 @@ const CampaignDetailView = () => {
       });
 
       if (res.status === 200) {
-        alert("Successfully joined the campaign!");
+        alert(t("success_joined"));
         navigation.navigate("Home");
       } else {
-        alert("Failed to join.");
+        alert(t("failed_join"));
       }
     } catch (err) {
-      alert("Join error");
+      alert(t("join_error"));
       console.log(err);
     } finally {
       setIsLoading(false);
@@ -105,7 +108,7 @@ const CampaignDetailView = () => {
   if (!campaign) {
     return (
       <View style={styles.centered}>
-        <Text>No Campaigns Are Going On Now</Text>
+        <Text>{t("no_campaigns")}</Text>
       </View>
     );
   }
@@ -122,9 +125,9 @@ const CampaignDetailView = () => {
       <Text style={styles.title}>{campaign.title}</Text>
       <Text style={styles.description}>{campaign.description}</Text>
 
-      <Text style={styles.label}>Price: {campaign.variant.price} KD</Text>
-      <Text style={styles.label}>Your Price: {campaignPrice.toFixed(2)} KD</Text>
-      <Text style={styles.label}>Minimum Order Quantity: {variant.minimum_order_quantity_for_offer}</Text>
+      <Text style={styles.label}>{t("price")}: {campaign.variant.price} KD</Text>
+      <Text style={styles.label}>{t("your_price")}: {campaignPrice.toFixed(2)} KD</Text>
+      <Text style={styles.label}>{t("minimum_order")}: {variant.minimum_order_quantity_for_offer}</Text>
 
       <View style={styles.quantityRow}>
         <TouchableOpacity style={styles.quantityButton} onPress={decreaseQuantity} disabled={additionalQuantity === 0}>
@@ -136,7 +139,7 @@ const CampaignDetailView = () => {
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.totalAmount}>Total Amount: {totalAmount} KD</Text>
+      <Text style={styles.totalAmount}>{t("total_amount")}: {totalAmount} KD</Text>
 
       {isLoading && <ActivityIndicator size="large" color="#0aad0a" style={{ marginVertical: 20 }} />}
 
@@ -147,12 +150,12 @@ const CampaignDetailView = () => {
       >
         <Text style={styles.joinButtonText}>
           {isLoading
-            ? 'Joining...'
+            ? t("joining")
             : paymentOption === 'free'
-              ? 'Join for Free'
+              ? t("join_free")
               : paymentOption === 'basic'
-                ? 'Pay 10% Advance'
-                : 'Pay Full Amount'}
+                ? t("pay_10")
+                : t("pay_full")}
         </Text>
       </TouchableOpacity>
 
@@ -162,8 +165,10 @@ const CampaignDetailView = () => {
       </View>
       <Text style={styles.progressText}>
         {progress >= 100
-          ? "Target Achieved!"
-          : `${(variant.minimum_order_quantity_for_offer - totalQuantity).toFixed(2)} Kg more to unlock!`}
+          ? t("target_achieved")
+          : t("more_to_unlock", {
+              amount: (variant.minimum_order_quantity_for_offer - totalQuantity).toFixed(2)
+            })}
       </Text>
     </ScrollView>
   );

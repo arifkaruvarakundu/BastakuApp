@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import API_BASE_URL from '../config'
+import {useTranslation} from 'react-i18next'
 
 const StartCampaignScreen = () => {
   const [variant, setVariant] = useState({});
@@ -13,6 +14,8 @@ const StartCampaignScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [paymentOption, setPaymentOption] = useState('');
   const [productName, setProductName] = useState('');
+
+  const { t } = useTranslation("StartCampaign");
 
   const navigation = useNavigation();
 
@@ -91,13 +94,13 @@ const StartCampaignScreen = () => {
       });
 
       if (response.status === 201) {
-        Alert.alert("Success", "Campaign started successfully!");
+        Alert.alert(t("success"), t("campaign_started"));
         navigation.navigate('HomeTab', { screen: 'Home' });
       } else {
-        Alert.alert("Error", "Failed to start the campaign.");
+        Alert.alert(t("error"), t("campaign_failed"));
       }
     } catch (err) {
-      Alert.alert("Error", "Something went wrong.");
+      Alert.alert(t("error"), t("something_wrong"));
       console.log(err);
     } finally {
       setIsLoading(false);
@@ -107,40 +110,40 @@ const StartCampaignScreen = () => {
   if (!variant) {
     return (
       <View style={styles.centered}>
-        <Text>Loading...</Text>
+        <Text>{t("loading")}</Text>
       </View>
     );
   }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.heading}>Start a New Campaign</Text>
+      <Text style={styles.heading}>{t("StartCampaign")}</Text>
 
       {variant?.variant_images?.length > 0 && (
         <Image source={{ uri: variant.variant_images[0].image_url }} style={styles.image} />
       )}
 
-      <Text style={styles.label}>Campaign Title</Text>
+      <Text style={styles.label}>{t("campaign_title")}</Text>
       <TextInput style={styles.input} value={`${variant.brand} ${productName}`} editable={false} />
 
       {variant?.liter && (
         <>
-          <Text style={styles.label}>Volume (Litre)</Text>
+          <Text style={styles.label}>{t("volume")}</Text>
           <TextInput style={styles.input} value={`${variant.liter}`} editable={false} />
         </>
       )}
 
       {variant?.weight && (
         <>
-          <Text style={styles.label}>Weight (Kg)</Text>
+          <Text style={styles.label}>{t("weight")}</Text>
           <TextInput style={styles.input} value={`${variant.weight}`} editable={false} />
         </>
       )}
 
-      <Text style={styles.label}>Your Price (in KD)</Text>
+      <Text style={styles.label}>{t("your_price")}</Text>
       <TextInput style={styles.input} value={campaignPrice.toFixed(3)} editable={false} />
 
-      <Text style={styles.label}>My Quantity</Text>
+      <Text style={styles.label}>{t("my_quantity")}</Text>
       <View style={styles.quantityRow}>
         <TouchableOpacity style={styles.qtyBtn} onPress={decreaseQuantity} disabled={quantity <= 1}>
           <Text>-</Text>
@@ -151,7 +154,7 @@ const StartCampaignScreen = () => {
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.label}>Progress</Text>
+      <Text style={styles.label}>{t("progress")}</Text>
       <View style={styles.progressBar}>
         <View
           style={[
@@ -165,15 +168,15 @@ const StartCampaignScreen = () => {
       </View>
       <Text style={styles.progressText}>
         {progress >= 100
-          ? "Target Achieved!"
-          : `${Math.max(0, (variant.minimum_order_quantity_for_offer - quantity).toFixed(2))} more to unlock!`}
+          ? t("target_achieved")
+          : t("more_to_unlock", { amount: Math.max(0, (variant.minimum_order_quantity_for_offer - quantity).toFixed(2)) })}
       </Text>
 
-      <Text style={styles.label}>Total Amount (in KD)</Text>
+      <Text style={styles.label}>{t("total_amount")} (in KD)</Text>
       <TextInput style={styles.input} value={(campaignPrice * quantity).toFixed(3)} editable={false} />
 
       <TouchableOpacity style={styles.startBtn} onPress={handleStartCampaign} disabled={isLoading}>
-        {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnText}>Start Campaign</Text>}
+        {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnText}>{t("start_campaign")}</Text>}
       </TouchableOpacity>
     </ScrollView>
   );
@@ -255,4 +258,3 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
-

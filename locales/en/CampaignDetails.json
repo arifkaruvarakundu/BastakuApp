@@ -1,0 +1,16 @@
+{
+    "join_free": "Join for Free",
+    "pay_10": "Pay 10% Advance",
+    "pay_full": "Pay Full Amount",
+    "joining": "Joining...",
+    "price": "Price",
+    "your_price": "Your Price",
+    "minimum_order": "Minimum Order Quantity",
+    "total_amount": "Total Amount",
+    "target_achieved": "Target Achieved!",
+    "more_to_unlock": "{{amount}} Kg more to unlock!",
+    "no_campaigns": "No Campaigns Are Going On Now",
+    "success_joined": "Successfully joined the campaign!",
+    "failed_join": "Failed to join.",
+    "join_error": "Join error"
+  }
