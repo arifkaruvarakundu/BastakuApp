@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux'; // Use dispatch to trigger actions
 import { setAuthenticated } from '../redux/authSlice'; // Ensure correct import path
 import API_BASE_URL from '../config'; // Ensure correct API path
 import { useTranslation } from 'react-i18next'; // Import translation hook
+import Toast from 'react-native-toast-message';
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -55,12 +56,18 @@ const SignUp = () => {
 
     // Validation checks
     if (!first_name || !last_name || !email || !password || !confirmPassword) {
-      Alert.alert(t("fillFieldsUp"));
+      Toast.show({
+        type: 'error',
+        text1: t("fillFieldsUp"),
+      });
       return;
     }
 
     if (password !== confirmPassword) {
-      Alert.alert(t("passwordMismatch"));
+      Toast.show({
+        type: 'error',
+        text1: t("passwordMismatch"),
+      });
       return;
     }
 
@@ -90,14 +97,24 @@ const SignUp = () => {
         await AsyncStorage.setItem('email', JSON.stringify(data.email)); // Ensure token is stored as a string
         await AsyncStorage.setItem('user_type', JSON.stringify(data.user_type)); // Ensure user_type is stored as a string
 
-        Alert.alert(t("successUp"));
+        Toast.show({
+          type: 'success',
+          text1: t("successUp"),
+        });
         navigation.navigate('Home'); // Navigate to home after success
       } else {
-        Alert.alert('Error', data.message || t("error"));
+        Toast.show({
+          type: 'error',
+          text1: t("error"),
+          text2: data.message || '',
+        });
       }
     } catch (error) {
       console.error('Sign up error:', error);
-      Alert.alert(t("networkErrorUp"));
+      Toast.show({
+        type: 'error',
+        text1: t("networkErrorUp"),
+      });
     }
   };
 

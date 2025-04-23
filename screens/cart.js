@@ -13,6 +13,7 @@ const ShoppingCart = () => {
     state => state.cart.cartItems,
     (cartItems) => Object.values(cartItems).filter(item => item && item.id)
   );
+  
   const navigation = useNavigation();
   // then in your component
   const cartItems = useSelector(selectCartItems);

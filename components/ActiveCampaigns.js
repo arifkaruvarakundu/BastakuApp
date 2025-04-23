@@ -84,7 +84,7 @@ const ActiveGroupDealStory = () => {
 
   return (
     <View style={styles.container}>
-      <Text>{t('ongoingCampaigns')}</Text>
+      <Text style={styles.headerText}>{t('ongoingCampaigns')}</Text>
       <FlatList
         data={campaigns}
         keyExtractor={(item) => item.id}
@@ -143,6 +143,17 @@ const styles = StyleSheet.create({
     color: "#333",
     maxWidth: 80,
   },
+  headerText: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#3b614f', // deep green for elegance
+    marginLeft: 12,
+    marginBottom: 8,
+    textTransform: 'capitalize',
+    fontFamily: 'System', // You can replace with a custom font if using one
+    letterSpacing: 0.5,
+  },
+  
 });
 
 export default ActiveGroupDealStory;

@@ -70,11 +70,28 @@ const ProductDetailView = ({ route, navigation }) => {
     }
   };
 
+  const calculateCampaignPrice = (price, campaign_discount_percentage) => {
+    const campaignPrice = price - (price * campaign_discount_percentage / 100)
+    return campaignPrice 
+
+  };
+
   const uniqueBrands = [...new Set(variants.map(v => v.brand))];
 
   const handleAddToCart = () => {
+    console.log("cartItems:@@@",cartItems)
     if (!selectedVariant || !selectedVariant.id || !fetchedProduct?.product_name) {
       Alert.alert("Error", "Invalid product selection.");
+      return;
+    }
+
+    // ✅ Check if any item in the cart has the same productId
+    const isInCart = Object.values(cartItems).some(
+      item => item.productId === fetchedProduct.id
+    );
+
+    if (isInCart) {
+      Alert.alert("Info", "You have already added this to the cart.");
       return;
     }
   
@@ -232,7 +249,8 @@ const ProductDetailView = ({ route, navigation }) => {
       <View style={styles.topRow}>
   <View style={styles.leftInfo}>
     <Text style={styles.title}>{i18n.language === "ar" ? fetchedProduct.product_name_ar : fetchedProduct.product_name_en}</Text>
-    <Text style={styles.price}>${selectedVariant.price}</Text>
+    <Text style={styles.price}>{t("price")}: {selectedVariant.price} {t("kd")}</Text>
+    <Text style={styles.price}>{t("campaignPrice")}: {parseFloat(calculateCampaignPrice(selectedVariant.price, selectedVariant.campaign_discount_percentage)).toFixed(3)} {t("kd")}</Text>
   </View>
 
   <View style={styles.rightInfo}>

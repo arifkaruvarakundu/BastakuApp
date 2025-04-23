@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Dimensions,
   ActivityIndicator,
+  Alert
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import axios from "axios";
@@ -15,10 +16,13 @@ import API_BASE_URL from "../config";
 import { useTranslation } from 'react-i18next';
 import {useSelector, useDispatch} from 'react-redux';
 import { addToCart, removeFromCart, updateCartItemQuantity } from '../redux/cartSlice';
+import Toast from 'react-native-toast-message';
 
 const { width } = Dimensions.get("window");
 
 const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR }) => {
+  const { i18n } = useTranslation();
+  const { t } = useTranslation('shop');
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -30,8 +34,13 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR }) =
   const [renderCount, setRenderCount] = useState(5); // initial batch size
   const BATCH_SIZE = 5;
 
-  const { i18n } = useTranslation();
-  const { t } = useTranslation('shop');
+  console.log("arabic categoryname:",categoryNameAR, categoryName)
+
+  const currentLanguage = i18n.language;
+  const localizedCategoryName = currentLanguage === 'ar' ? categoryNameAR || categoryName : categoryName || categoryNameAR;
+
+  const cartItems = useSelector((state) => state.cart.cartItems);
+
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -79,12 +88,14 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR }) =
 
   const handleIncrease = (item) => {
     const currentQty = localQuantities[item.id] || 0;
-
-    console.log("item", item)
+    const isInCart = !!cartItems?.[item.id?.toString()];
+    // const isInCart = !!cartItems?.[selectedVariant.id?.toString()];
+  
+    const newQty = currentQty + 1;
   
     setLocalQuantities((prev) => ({
       ...prev,
-      [item.id]: currentQty + 1,
+      [item.id]: newQty,
     }));
   
     const itemToAdd = {
@@ -94,15 +105,19 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR }) =
       brand: item.variants?.[0]?.brand,
       price: item.variants?.[0]?.price,
       image: item.variants?.[0]?.variant_images?.[0]?.image_url || '',
-      quantity: currentQty + 1,
+      quantity: newQty,
       liter: item.variants?.[0]?.liter,
       weight: item.variants?.[0]?.weight,
     };
   
-    if (currentQty === 0) {
+    if (!isInCart) {
       dispatch(addToCart(itemToAdd));
+      Toast.show({
+        type: 'success',
+        text1: t("successaddcart"),
+      });
     } else {
-      dispatch(updateCartItemQuantity({ id: item.id, quantity: currentQty + 1 }));
+      dispatch(updateCartItemQuantity({ id: item.id, quantity: newQty }));
     }
   };
   
@@ -149,9 +164,14 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR }) =
   }, [categoryId, products]);
 
   const handleViewAll = () => {
-    const filtered = [...products]
-    setFilteredProducts(filtered)
-    setShowAll(true);
+    setLoading(true); // Start loading
+  
+    setTimeout(() => {
+      const filtered = [...products];
+      setFilteredProducts(filtered);
+      setShowAll(true);
+      setLoading(false); // Stop loading after processing
+    }, 500); // Adjust delay as needed
   };
 
   const handleProductPress = (product) => {
@@ -338,20 +358,23 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR }) =
     <View style={styles.container}>
       <View style={styles.headerContainer}>
       <Text style={styles.headerTitle}>
-        {categoryId && !showAll ? categoryName : t("allProducts")}
+        {categoryId && !showAll ? localizedCategoryName : t("allProducts")}
       </Text>
 
       <TouchableOpacity
-          onPress={handleViewAll}
-          disabled={showAll}
-          style={[styles.viewAllButton, showAll && { opacity: 0.5 }]}
-        >
-        <Text style={styles.viewAllText}>
-        {t("viewAll")}
-        </Text>
-
-          <AntDesign name="right" size={16} color="#0066CC" />
-        </TouchableOpacity>
+        onPress={handleViewAll}
+        disabled={showAll || loading}
+        style={[styles.viewAllButton, (showAll || loading) && { opacity: 0.5 }]}
+      >
+        {loading ? (
+          <ActivityIndicator size="small" color="#0066CC" />
+        ) : (
+          <>
+            <Text style={styles.viewAllText}>{t("viewAll")}</Text>
+            <AntDesign name="right" size={16} color="#0066CC" />
+          </>
+        )}
+      </TouchableOpacity>
       </View>
 
       <FlatList

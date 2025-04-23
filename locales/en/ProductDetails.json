@@ -1,6 +1,9 @@
 {
     "loading": "Loading product details...",
     "brand": "Brand",
+    "campaignPrice" : "Campaign Price",
+    "price": "Price",
+    "kd": "KD",
     "add_to_cart": "Add to Cart",
     "start_free": "Start Free",
     "join_free": "Join Free",

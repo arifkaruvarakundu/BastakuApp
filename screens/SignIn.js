@@ -6,6 +6,7 @@ import {setAuthenticated} from '../redux/authSlice';
 import API_BASE_URL from "../config";
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import Toast from 'react-native-toast-message';
 
 export default function Login({ navigation }) {
   const [formData, setFormData] = useState({
@@ -29,14 +30,20 @@ export default function Login({ navigation }) {
   const handleLogin = async () => {
     const { email, password } = formData;
     if (!email || !password) {
-      Alert.alert(t("fillFields"));
+      Toast.show({
+        type: 'error',
+        text1: t("fillFields"),
+      });
       return;
     }
 
     // Validate email format using regex
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     if (!emailRegex.test(email)) {
-      Alert.alert(t("invalidEmail"));
+      Toast.show({
+        type: 'error',
+        text1: t("invalidEmail"),
+      });
       return;
     }
 
@@ -57,7 +64,10 @@ export default function Login({ navigation }) {
         await AsyncStorage.setItem('email', data.email)
         await AsyncStorage.setItem('user_type', JSON.stringify(data.user_type))
         // If login is successful, handle successful login logic
-        Alert.alert(t("success"));
+        Toast.show({
+          type: 'success',
+          text1: t("success"),
+        });
         
         // You may want to store the authentication token in AsyncStorage or context
         // await AsyncStorage.setItem('access_token', data.token);
@@ -70,7 +80,10 @@ export default function Login({ navigation }) {
       }
     } catch (error) {
       console.error('Login error:', error);
-      Alert.alert(t("networkError"));
+      Toast.show({
+        type: 'error',
+        text1: t("networkError"),
+      });
     }
   };
 

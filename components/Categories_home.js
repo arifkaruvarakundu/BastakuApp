@@ -60,8 +60,8 @@ const CategoriesHome = ({ navigation, fetchCategories, onCategorySelect }) => {
       screen: 'shop',
       params: {
         categoryId: category.id,
+        categoryNameAR: category.name_ar,
         categoryName: category.name,
-        categoryNameAR: category.name_ar
       },
     });
   };
