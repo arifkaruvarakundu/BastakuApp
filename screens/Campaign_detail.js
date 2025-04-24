@@ -5,6 +5,8 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import API_BASE_URL from '../config';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
+import Toast from 'react-native-toast-message';
 
 const CampaignDetailView = () => {
   const [variant, setVariant] = useState(null);
@@ -16,6 +18,8 @@ const CampaignDetailView = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [paymentOption, setPaymentOption] = useState('');
   const [isWholesaler, setIsWholesaler] = useState(false);
+
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
   const { t } = useTranslation('CampaignDetail');
   const route = useRoute();
@@ -75,6 +79,14 @@ const CampaignDetailView = () => {
   };
 
   const joinCampaign = async () => {
+    if(!isAuthenticated){
+      Toast.show({
+        type: 'error',
+        text1: 'Please login for joining Campaign'
+      });
+      navigation.navigate("SignIn")
+      return;
+    }
     setIsLoading(true);
     const token = await AsyncStorage.getItem("access_token");
 

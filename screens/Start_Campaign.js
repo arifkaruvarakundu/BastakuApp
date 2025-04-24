@@ -4,7 +4,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import API_BASE_URL from '../config'
-import {useTranslation} from 'react-i18next'
+import {useTranslation} from 'react-i18next';
+import {useSelector} from 'react-redux';
+import Toast from 'react-native-toast-message';
+import SuccessModal from '../components/Success_alert';
 
 const StartCampaignScreen = () => {
   const [variant, setVariant] = useState({});
@@ -14,6 +17,9 @@ const StartCampaignScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [paymentOption, setPaymentOption] = useState('');
   const [productName, setProductName] = useState('');
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  const isAuthenticated = useSelector((state)=>state.auth.isAuthenticated)
 
   const { t } = useTranslation("StartCampaign");
 
@@ -73,6 +79,15 @@ const StartCampaignScreen = () => {
   };
 
   const handleStartCampaign = async () => {
+    if(!isAuthenticated){
+      Toast.show({
+        type: 'error',
+        text1: 'Please login to start a Campaign'
+      });
+      navigation.navigate("SignIn")
+      return;
+    }
+
     const data = {
       variant: variant.id,
       title: `${variant.brand} ${productName}`,
@@ -94,8 +109,8 @@ const StartCampaignScreen = () => {
       });
 
       if (response.status === 201) {
-        Alert.alert(t("success"), t("campaign_started"));
-        navigation.navigate('HomeTab', { screen: 'Home' });
+        setShowSuccessModal(true);
+        // navigation.navigate('HomeTab', { screen: 'Home' });
       } else {
         Alert.alert(t("error"), t("campaign_failed"));
       }
@@ -116,6 +131,7 @@ const StartCampaignScreen = () => {
   }
 
   return (
+    <>
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.heading}>{t("StartCampaign")}</Text>
 
@@ -179,6 +195,15 @@ const StartCampaignScreen = () => {
         {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnText}>{t("start_campaign")}</Text>}
       </TouchableOpacity>
     </ScrollView>
+    <SuccessModal
+        visible={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        onDetails={() => {
+          setShowSuccessModal(false);
+          navigation.navigate('HomeTab', { screen: 'Home' });
+        }}
+      />
+    </>
   );
 };
 
