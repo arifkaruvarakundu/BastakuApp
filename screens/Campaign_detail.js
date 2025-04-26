@@ -7,6 +7,7 @@ import API_BASE_URL from '../config';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import Toast from 'react-native-toast-message';
+import SuccessModalJoin from '../components/Success_alert_join';
 
 const CampaignDetailView = () => {
   const [variant, setVariant] = useState(null);
@@ -18,6 +19,7 @@ const CampaignDetailView = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [paymentOption, setPaymentOption] = useState('');
   const [isWholesaler, setIsWholesaler] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
@@ -104,8 +106,7 @@ const CampaignDetailView = () => {
       });
 
       if (res.status === 200) {
-        alert(t("success_joined"));
-        navigation.navigate("Home");
+        setShowSuccessModal(true);
       } else {
         alert(t("failed_join"));
       }
@@ -182,6 +183,14 @@ const CampaignDetailView = () => {
               amount: (variant.minimum_order_quantity_for_offer - totalQuantity).toFixed(2)
             })}
       </Text>
+      <SuccessModalJoin
+        visible={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        onDetails={() => {
+          setShowSuccessModal(false);
+          navigation.navigate('HomeTab', { screen: 'Home' });
+        }}
+      />
     </ScrollView>
   );
 };

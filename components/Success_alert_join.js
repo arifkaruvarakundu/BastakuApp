@@ -3,13 +3,13 @@ import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import LottieView from 'lottie-react-native';
 import { useNavigation } from '@react-navigation/native';
 
-const SuccessModal = ({ visible, onClose}) => {
-  const navigation = useNavigation();
+const SuccessModalJoin = ({ visible, onClose}) => {
 
-  const onDetails = () =>{
-    navigation.navigate("AccountTab", {screen: "CampaignsScreen"})
-}
+    const navigation = useNavigation();
 
+    const onDetails = () =>{
+        navigation.navigate("AccountTab", {screen: "CampaignsScreen"})
+    }
   return (
     <Modal visible={visible} transparent animationType="slide">
       <View style={styles.modalContainer}>
@@ -21,7 +21,7 @@ const SuccessModal = ({ visible, onClose}) => {
             style={{ width: 150, height: 150 }}
           />
           <Text style={styles.title}>🎉 Congratulations!</Text>
-          <Text style={styles.subtitle}>You've started a new campaign!</Text>
+          <Text style={styles.subtitle}>You've successfully joined in campaign!</Text>
           <Text style={styles.details}>You’re now eligible for discounted pricing while achieving sales Target!</Text>
 
           <View style={styles.buttonContainer}>
@@ -68,4 +68,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SuccessModal;
+export default SuccessModalJoin;

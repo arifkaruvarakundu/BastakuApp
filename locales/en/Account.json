@@ -51,13 +51,21 @@
     "volume": "Volume",
     "discountedPrice": "Discounted Price",
     "orderedQty": "Ordered Quantity",
+    "currentQty": "Current Quantity",
+    "confirmCancelTitle": "Confirm Cancellation",
+    "confirmCancelMessage": "Are you sure you want to cancel this campaign?",
+    "yes":"Yes",
+    "no" : "No", 
     "requiredQty": "Required Quantity",
     "startDate": "Start Date",
     "progress": "Progress",
     "cancelCampaign": "Cancel Campaign",
     "loading": "Loading your campaigns...",
     "cancelSuccess": "Campaign cancelled.",
-    "cancelError": "Could not cancel campaign."
+    "cancelError": "Could not cancel campaign.",
+
+    
+
           
 
 

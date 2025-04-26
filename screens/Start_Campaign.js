@@ -110,7 +110,6 @@ const StartCampaignScreen = () => {
 
       if (response.status === 201) {
         setShowSuccessModal(true);
-        // navigation.navigate('HomeTab', { screen: 'Home' });
       } else {
         Alert.alert(t("error"), t("campaign_failed"));
       }

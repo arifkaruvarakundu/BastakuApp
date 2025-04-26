@@ -12,6 +12,7 @@ import OrdersScreen from '../screens/Orders_screen';
 import AccountCampaigns from '../screens/Campaigns_screen'
 import ShoppingCart from '../screens/Cart';
 import ShopCheckoutScreen from '../screens/Checkout_screen';
+import NotificationScreen from '../screens/Notification_screen';
 import { useTranslation } from 'react-i18next';
 
 const Stack = createNativeStackNavigator();
@@ -83,6 +84,11 @@ export const AccountStackNavigator = () =>{
         name = "CampaignsScreen"
         component = {AccountCampaigns}
         options={() => ({ title: t('campaigns') })}
+      />
+      <Stack.Screen
+        name = "NotificationsScreen"
+        component = {NotificationScreen}
+        options={() => ({ title: t('notifications') })}
       />
     </ Stack.Navigator>
   );

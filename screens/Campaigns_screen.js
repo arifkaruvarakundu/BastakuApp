@@ -31,6 +31,8 @@ const AccountCampaigns = () => {
           },
         });
 
+        console.log("user Responses:!!!!!!!!!", response.data)
+
         setCampaigns(response.data);
       } catch (error) {
         console.error("Error fetching campaigns:", error);
@@ -42,23 +44,45 @@ const AccountCampaigns = () => {
     fetchCampaigns();
   }, []);
 
-  const handleCancel = async (campaignId) => {
-    try {
-      const token = await AsyncStorage.getItem("access_token");
-      await axios.post(
-        `${API_BASE_URL}/cancel_campaign/${campaignId}/`,
-        {},
+  const handleCancel = (campaignId) => {
+    Alert.alert(
+      t("confirmCancelTitle"),
+      t("confirmCancelMessage"),
+      [
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
+          text: t("no"),
+          style: "cancel",
+        },
+        {
+          text: t("yes"),
+          onPress: async () => {
+            try {
+              const token = await AsyncStorage.getItem("access_token");
+              await axios.post(
+                `${API_BASE_URL}/cancel_campaign/${campaignId}/`,
+                {},
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
+  
+              // Remove the canceled campaign from local state immediately
+              setCampaigns((prevCampaigns) =>
+                prevCampaigns.filter((campaign) => campaign.id !== campaignId)
+              );
+  
+              Alert.alert(t("success"), t("cancelSuccess"));
+            } catch (error) {
+              Alert.alert(t("error"), t("cancelError"));
+            }
           },
-        }
-      );
-      Alert.alert(t("success"), t("cancelSuccess"));
-    } catch (error) {
-      Alert.alert(t("error"), t("cancelError"));
-    }
-  };
+        },
+      ],
+      { cancelable: false }
+    );
+  };  
 
   const renderCampaign = ({ item }) => {
     const progress =
@@ -107,6 +131,10 @@ const AccountCampaigns = () => {
         </View>
         <View style={styles.detailRow}>
           <Text style={styles.label}>{t("orderedQty")}:</Text>
+          <Text style={styles.value}>{item.participant_quantity}</Text>
+        </View>
+        <View style={styles.detailRow}>
+          <Text style={styles.label}>{t("currentQty")}:</Text>
           <Text style={styles.value}>{item.current_quantity}</Text>
         </View>
         <View style={styles.detailRow}>
