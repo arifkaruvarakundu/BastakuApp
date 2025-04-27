@@ -30,7 +30,7 @@ const ActiveGroupDealStory = () => {
           // Filter out campaigns with 0 participants and 0 quantity
           const filteredCampaigns = response.data.filter((campaign) =>
             !(campaign.has_ended) && !(campaign.current_quantity===0|| campaign.current_participants===0));
-
+          console.log("filtered campaigns@@@@@",filteredCampaigns)
           setCampaigns(filteredCampaigns);
           setLoading(false);
         } catch (err) {
@@ -48,6 +48,13 @@ const ActiveGroupDealStory = () => {
   const renderItem = ({ item }) => {
     const firstImage = item.variant?.variant_images?.[0]; // Safely get first image
     const imageUrl = firstImage?.image_url; // Assuming image object has an `image` field
+
+    const progress = item.variant?.minimum_order_quantity_for_offer 
+                      ? (item.current_quantity / item.variant.minimum_order_quantity_for_offer) * 100 
+                      : 0;
+    const progressText = `${Math.round(progress)}%`;
+
+
     return (
       <TouchableOpacity 
         style={styles.storyItem} 
@@ -68,7 +75,12 @@ const ActiveGroupDealStory = () => {
           <View style={styles.middleRing}>
             <View style={styles.innerRing}>
             {imageUrl ? (
-              <Image source={{ uri: imageUrl }} style={styles.storyImage} />
+              <>
+                <Image source={{ uri: imageUrl }} style={styles.storyImage} />
+                  <View style={styles.badgeContainer}>
+                      <Text style={styles.badgeText}>{progressText}</Text>
+                  </View>
+              </>
             ) : (
               <View style={[styles.storyImage, { backgroundColor: "#ccc" }]} />
             )}
@@ -135,6 +147,20 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 35,
+  },
+  badgeContainer: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: '#ff4d4d', // red badge
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 10,
+  },
+  badgeText: {
+    color: 'white',
+    fontSize: 10,
+    fontWeight: 'bold',
   },
   storyText: {
     marginTop: 5,

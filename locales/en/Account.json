@@ -9,6 +9,11 @@
     "settings": "Settings",
     "loggedOut": "Logged Out",
     "logoutMessage": "You have been logged out successfully.",
+    "selectOption": "Select an option",
+    "camera": "Camera",
+    "gallery": "Gallery",
+    "cancel": "Cancel",
+    "changePhoto": "Change Photo",
 
     "editAddress": "Edit Address",
     "first_name": "First Name",

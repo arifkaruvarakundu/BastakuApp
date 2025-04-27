@@ -1,12 +1,11 @@
 import React,{useCallback} from 'react';
-import { FlatList, StatusBar} from 'react-native';
+import { FlatList, StatusBar, SafeAreaView} from 'react-native';
 import ActiveCampaigns from "../components/ActiveCampaigns";
 import Header from "../components/Header";
 import { useNavigation } from '@react-navigation/native';
 import CarouselHomePage from "../components/Carousel_home";
 import { CaurousalData as data } from "../utils/CarouselData";
 import CategoriesHome from "../components/Categories_home";
-
 
 const HomePage = () => {
   const navigation = useNavigation();
@@ -17,9 +16,9 @@ const HomePage = () => {
   // }, []);
 
   return (
-    <>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
       <Header navigation={navigation} />
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      <StatusBar barStyle="dark-content" backgroundColor="#fff" translucent={false} />
       <FlatList
         data={[]} // empty because all content is in header
         keyExtractor={() => 'dummy'} // needed to avoid warning
@@ -33,7 +32,7 @@ const HomePage = () => {
           </>
         }
       />
-    </>
+    </SafeAreaView>
   );
 };
 

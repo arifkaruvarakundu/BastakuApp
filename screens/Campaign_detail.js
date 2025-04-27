@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, ScrollView, ActivityIndicator, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Image, ScrollView, ActivityIndicator, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import axios from 'axios';
@@ -81,41 +81,58 @@ const CampaignDetailView = () => {
   };
 
   const joinCampaign = async () => {
-    if(!isAuthenticated){
+    if (!isAuthenticated) {
       Toast.show({
         type: 'error',
-        text1: 'Please login for joining Campaign'
+        text1: t("login_required")
       });
-      navigation.navigate("SignIn")
+      navigation.navigate("SignIn");
       return;
     }
-    setIsLoading(true);
-    const token = await AsyncStorage.getItem("access_token");
-
-    const data = {
-      variant: campaign.variant.id,
-      participant_quantity: additionalQuantity,
-      payment_option: paymentOption,
-      start_time: new Date().toISOString(),
-      end_time: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-    };
-
-    try {
-      const res = await axios.post(`${API_BASE_URL}/campaigns/${id}/join/`, data, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      if (res.status === 200) {
-        setShowSuccessModal(true);
-      } else {
-        alert(t("failed_join"));
-      }
-    } catch (err) {
-      alert(t("join_error"));
-      console.log(err);
-    } finally {
-      setIsLoading(false);
-    }
+  
+    // Show confirmation alert
+    Alert.alert(
+      t("confirm_join"), // title
+      t("confirm_join_message"), // message
+      [
+        {
+          text: t("cancel"),
+          style: 'cancel',
+        },
+        {
+          text: t("join"),
+          onPress: async () => {
+            setIsLoading(true);
+            const token = await AsyncStorage.getItem("access_token");
+  
+            const data = {
+              variant: campaign.variant.id,
+              participant_quantity: additionalQuantity,
+              payment_option: paymentOption,
+              start_time: new Date().toISOString(),
+              end_time: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+            };
+  
+            try {
+              const res = await axios.post(`${API_BASE_URL}/campaigns/${id}/join/`, data, {
+                headers: { Authorization: `Bearer ${token}` }
+              });
+  
+              if (res.status === 200) {
+                setShowSuccessModal(true);
+              } else {
+                alert(t("failed_join"));
+              }
+            } catch (err) {
+              alert(t("join_error"));
+              console.log(err);
+            } finally {
+              setIsLoading(false);
+            }
+          }
+        }
+      ]
+    );
   };
 
   if (!campaign) {

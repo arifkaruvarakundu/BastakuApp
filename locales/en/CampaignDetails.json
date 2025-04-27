@@ -12,5 +12,10 @@
     "no_campaigns": "No Campaigns Are Going On Now",
     "success_joined": "Successfully joined the campaign!",
     "failed_join": "Failed to join.",
-    "join_error": "Join error"
+    "join_error": "Join error",
+    "login_required": "Please login for joining Campaign",
+    "confirm_join": "Confirm Join",
+    "confirm_join_message": "Are you sure you want to join this campaign?",
+    "cancel": "Cancel",
+    "join": "Join"
   }

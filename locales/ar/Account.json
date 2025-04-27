@@ -10,6 +10,11 @@
       "settings": "الإعدادات",
       "loggedOut": "تم تسجيل الخروج",
       "logoutMessage": "تم تسجيل خروجك بنجاح.",
+      "selectOption": "اختر خيارًا",
+      "camera": "الكاميرا",
+      "gallery": "المعرض",
+      "cancel": "إلغاء",
+      "changePhoto": "تغيير الصورة",
 
       "editAddress": "تعديل العنوان",
       "first_name": "الاسم الأول",

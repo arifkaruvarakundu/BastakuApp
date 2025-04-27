@@ -15,6 +15,15 @@
     "campaign_started": "Campaign started successfully!",
     "error": "Error",
     "campaign_failed": "Failed to start the campaign.",
-    "something_wrong": "Something went wrong."
+    "something_wrong": "Something went wrong.",
+    "congratulations": "Congratulations!",
+    "joined_campaign": "You've successfully joined in campaign!",
+    "eligibility_info": "You’re now eligible for discounted pricing while achieving sales target!",
+    "cancel": "Cancel",
+    "more_details": "More Details",
+    "new_campaign_started": "You've successfully started a new campaign!",
+    "confirm_start": "Confirm Start",
+    "confirm_start_message": "Are you sure you want to start this campaign?",
+    "start": "Start"
   }
   

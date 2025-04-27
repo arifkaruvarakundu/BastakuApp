@@ -37,10 +37,10 @@ const SignUp = () => {
         if (allKeys && allKeys.length > 0) {
           allKeys.forEach(async (key) => {
             const value = await AsyncStorage.getItem(key);
-            console.log(key, value); // Print key-value pair
+            // console.log(key, value); // Print key-value pair
           });
         } else {
-          console.log('No data in AsyncStorage');
+          // console.log('No data in AsyncStorage');
         }
       } catch (e) {
         console.error('Error reading AsyncStorage', e);
@@ -88,7 +88,7 @@ const SignUp = () => {
       });
 
       const data = await response.json();
-      console.log('SignUp Data:', data);
+      // console.log('SignUp Data:', data);
 
       if (response.ok) {
         dispatch(setAuthenticated());

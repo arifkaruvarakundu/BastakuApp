@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next';
 
 const { width } = Dimensions.get("window");
 
-const CategoriesShop = ({ navigation, fetchCategories, onCategorySelect }) => {
+const CategoriesShop = ({ navigation, fetchCategories, onCategorySelect, selectedCategoryId, categoriesScrollViewRef }) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -48,6 +48,13 @@ const CategoriesShop = ({ navigation, fetchCategories, onCategorySelect }) => {
     }, 1000);
   }, []);
 
+  useEffect(() => {
+    if (fetchCategories) {
+      fetchCategories(categories);
+    }
+  }, [categories]);
+  
+
   const handleViewAll = () => {
     // Navigate to the featured sellers list screen
     if (navigation) {
@@ -63,29 +70,31 @@ const CategoriesShop = ({ navigation, fetchCategories, onCategorySelect }) => {
     }
   };
 
-  const renderItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.sellerContainer}
-      onPress={() => handleCategoryPress(item)}
-      activeOpacity={0.7}
-    >
-      <View style={styles.imageContainer}>
-        <Image
-          source={{ uri: `${API_BASE_URL}${item.category_image}` }}
-          style={styles.sellerImage}
-          resizeMode="cover"
-        />
-      </View>
-      <Text style={styles.sellerName} numberOfLines={2}>
-        {i18n.language === "ar" ? item.name_ar : item.name_en}
-      </Text>
-      {/* <View style={styles.ratingContainer}>
-        <AntDesign name="star" size={12} color="#FFD700" />
-        <Text style={styles.ratingText}>{item.rating}</Text>
-      </View> */}
-      {/* <Text style={styles.productsText}>{item.productsCount}</Text> */}
-    </TouchableOpacity>
-  );
+  const renderItem = ({ item }) => {
+    const isSelected = selectedCategoryId === item.id;
+  
+    return (
+      <TouchableOpacity
+        style={[
+          styles.sellerContainer,
+          isSelected && styles.selectedCategory  // <-- APPLY DIFFERENT STYLE
+        ]}
+        onPress={() => handleCategoryPress(item)}
+        activeOpacity={0.7}
+      >
+        <View style={styles.imageContainer}>
+          <Image
+            source={{ uri: `${API_BASE_URL}${item.category_image}` }}
+            style={styles.sellerImage}
+            resizeMode="cover"
+          />
+        </View>
+        <Text style={[styles.sellerName, isSelected && styles.selectedText]}>
+          {i18n.language === "ar" ? item.name_ar : item.name_en}
+        </Text>
+      </TouchableOpacity>
+    );
+  };  
 
   if (loading) {
     return (
@@ -117,14 +126,14 @@ const CategoriesShop = ({ navigation, fetchCategories, onCategorySelect }) => {
         </TouchableOpacity> */}
       </View>
       <FlatList
+        ref={categoriesScrollViewRef}
         data={categories}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
       />
-
 
     </View>
   );
@@ -235,6 +244,17 @@ const styles = StyleSheet.create({
   errorText: {
     color: "red",
   },
+  selectedCategory: {
+    backgroundColor: '#b6e4af',  // light green or any color you want
+    borderColor: '#499c5d',
+    borderWidth: 2,
+  },
+  
+  selectedText: {
+    color: '#225522',
+    fontWeight: 'bold',
+  },
+  
 });
 
 export default CategoriesShop;

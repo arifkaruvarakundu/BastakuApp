@@ -2,9 +2,11 @@ import React from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import LottieView from 'lottie-react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 const SuccessModal = ({ visible, onClose}) => {
   const navigation = useNavigation();
+  const {t} = useTranslation('StartCampaign') 
 
   const onDetails = () =>{
     navigation.navigate("AccountTab", {screen: "CampaignsScreen"})
@@ -20,16 +22,16 @@ const SuccessModal = ({ visible, onClose}) => {
             loop={true}
             style={{ width: 150, height: 150 }}
           />
-          <Text style={styles.title}>🎉 Congratulations!</Text>
-          <Text style={styles.subtitle}>You've started a new campaign!</Text>
-          <Text style={styles.details}>You’re now eligible for discounted pricing while achieving sales Target!</Text>
+          <Text style={styles.title}>🎉{t("congratulations")}</Text>
+          <Text style={styles.subtitle}>{t("new_campaign_started")}</Text>
+          <Text style={styles.details}>{t("eligibility_info")}</Text>
 
           <View style={styles.buttonContainer}>
             <TouchableOpacity onPress={onClose} style={styles.button}>
-              <Text style={styles.buttonText}>Cancel</Text>
+              <Text style={styles.buttonText}>{t("cancel")}</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={onDetails} style={[styles.button, styles.detailsButton]}>
-              <Text style={styles.buttonText}>More Details</Text>
+              <Text style={styles.buttonText}>{t("more_details")}</Text>
             </TouchableOpacity>
           </View>
         </View>

@@ -15,6 +15,12 @@
     "campaign_started": "تم بدء الحملة بنجاح!",
     "error": "خطأ",
     "campaign_failed": "فشل في بدء الحملة.",
-    "something_wrong": "حدث خطأ ما."
+    "something_wrong": "حدث خطأ ما.",
+    "congratulations": "تهانينا!",
+    "joined_campaign": "لقد انضممت بنجاح إلى الحملة!",
+    "eligibility_info": "أنت الآن مؤهل للحصول على تسعير مخفض أثناء تحقيق هدف المبيعات!",
+    "cancel": "إلغاء",
+    "more_details": "مزيد من التفاصيل",
+    "new_campaign_started": "لقد بدأت حملة جديدة!"
   }
   

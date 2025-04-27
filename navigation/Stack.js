@@ -44,7 +44,7 @@ export const ShopStackNavigator = () => {
       <Stack.Screen 
         name="ProductDetails" 
         component={ProductDetailView} 
-        options={() => ({ title: t('productDetails') })}
+        options={() => ({ title: t('productDetails'), headerShown: true })}
       />
       <Stack.Screen 
         name="CampaignDetails" 
@@ -83,7 +83,7 @@ export const AccountStackNavigator = () =>{
       <Stack.Screen
         name = "CampaignsScreen"
         component = {AccountCampaigns}
-        options={() => ({ title: t('campaigns') })}
+        options={() => ({ title: t('campaigns'), headerShown: true })}
       />
       <Stack.Screen
         name = "NotificationsScreen"

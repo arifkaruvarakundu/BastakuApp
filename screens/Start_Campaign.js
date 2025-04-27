@@ -79,46 +79,62 @@ const StartCampaignScreen = () => {
   };
 
   const handleStartCampaign = async () => {
-    if(!isAuthenticated){
+    if (!isAuthenticated) {
       Toast.show({
         type: 'error',
         text1: 'Please login to start a Campaign'
       });
-      navigation.navigate("SignIn")
+      navigation.navigate("SignIn");
       return;
     }
-
-    const data = {
-      variant: variant.id,
-      title: `${variant.brand} ${productName}`,
-      discounted_price: campaignPrice,
-      payment_option: paymentOption,
-      quantity,
-      start_time: new Date().toISOString(),
-      end_time: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-    };
-
-    try {
-      setIsLoading(true);
-      const token = await AsyncStorage.getItem("access_token");
-
-      const response = await axios.post(`${API_BASE_URL}/start_campaign/`, data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+  
+    // Show confirmation alert
+    Alert.alert(
+      t("confirm_start"), // title
+      t("confirm_start_message"), // message
+      [
+        {
+          text: t("cancel"),
+          style: 'cancel',
         },
-      });
-
-      if (response.status === 201) {
-        setShowSuccessModal(true);
-      } else {
-        Alert.alert(t("error"), t("campaign_failed"));
-      }
-    } catch (err) {
-      Alert.alert(t("error"), t("something_wrong"));
-      console.log(err);
-    } finally {
-      setIsLoading(false);
-    }
+        {
+          text: t("start"),
+          onPress: async () => {
+            const data = {
+              variant: variant.id,
+              title: `${variant.brand} ${productName}`,
+              discounted_price: campaignPrice,
+              payment_option: paymentOption,
+              quantity,
+              start_time: new Date().toISOString(),
+              end_time: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+            };
+  
+            try {
+              setIsLoading(true);
+              const token = await AsyncStorage.getItem("access_token");
+  
+              const response = await axios.post(`${API_BASE_URL}/start_campaign/`, data, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              });
+  
+              if (response.status === 201) {
+                setShowSuccessModal(true);
+              } else {
+                Alert.alert(t("error"), t("campaign_failed"));
+              }
+            } catch (err) {
+              Alert.alert(t("error"), t("something_wrong"));
+              console.log(err);
+            } finally {
+              setIsLoading(false);
+            }
+          }
+        }
+      ]
+    );
   };
 
   if (!variant) {

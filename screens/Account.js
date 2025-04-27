@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import React,{useState, useEffect} from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Image} from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setNotAuthenticated } from '../redux/authSlice';
@@ -7,14 +7,128 @@ import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { clearCart } from '../redux/cartSlice';
 import { useTranslation } from 'react-i18next';
+import Toast from 'react-native-toast-message';
+import * as ImagePicker from 'expo-image-picker';
+import API_BASE_URL from '../config';
+
 
 const Account = () => {
+  const [profileImage, setProfileImage] = useState(null);
+
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
   
   const { t } = useTranslation('Account'); // Use the 'Account' namespace for translations
   const {i18n} = useTranslation(); // Use the 'Account' namespace for translations
+
+  useEffect(() => {
+    fetchUserProfile();
+  }, []);
+
+  const fetchUserProfile = async () => {
+    const token = await AsyncStorage.getItem('access_token');
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/current_user/`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+  
+      const data = await response.json();
+      if (response.ok) {
+        if (data.profile_img) {
+          setProfileImage(data.profile_img);  // set the image URI from server
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+    }
+  };
+
+  const handlePickImage = async () => {
+    Alert.alert(
+      t("selectOption"),
+      '',
+      [
+        {
+          text: t("camera"),
+          onPress: async () => {
+            let result = await ImagePicker.launchCameraAsync({
+              mediaTypes: ImagePicker.MediaTypeOptions.Images,
+              allowsEditing: true,
+              aspect: [1, 1],
+              quality: 0.7,
+            });
+            if (!result.canceled) {
+              const uri = result.assets[0].uri;
+              setProfileImage(uri);
+              await uploadProfileImage(uri);  // ⬅️ Upload immediately after picking
+            }
+          }
+        },
+        {
+          text: t("gallery"),
+          onPress: async () => {
+            let result = await ImagePicker.launchImageLibraryAsync({
+              mediaTypes: ImagePicker.MediaTypeOptions.Images,
+              allowsEditing: true,
+              aspect: [1, 1],
+              quality: 0.7,
+            });
+            if (!result.canceled) {
+              const uri = result.assets[0].uri;
+              setProfileImage(uri);
+              await uploadProfileImage(uri);  // ⬅️ Upload immediately after picking
+            }
+          }
+        },
+        { text: t("cancel"), style: "cancel" }
+      ]
+    );
+  };
+  
+
+  const uploadProfileImage = async (imageUri) => {
+    const token = await AsyncStorage.getItem('access_token');
+  
+    let formData = new FormData();
+    formData.append('profile_img', {
+      uri: imageUri,
+      name: 'profile.jpg',  // you can generate dynamic name if you want
+      type: 'image/jpeg',
+    });
+  
+    try {
+      const response = await fetch(`${API_BASE_URL}/update_profile_image/`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+        body: formData,
+      });
+  
+      const data = await response.json();
+      if (response.ok) {
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: data.message
+        });
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Upload Failed',
+          text2: data.detail || 'Something went wrong!'
+        });
+      }
+    } catch (error) {
+      console.error('Error uploading profile image:', error);
+    }
+  };
+  
 
   const handleLogout = async () => {
     try {
@@ -23,10 +137,16 @@ const Account = () => {
 
       dispatch(clearCart());
       dispatch(setNotAuthenticated());
-      Alert.alert(t("loggedOut"), t("logoutMessage"));
+
+      Toast.show({
+        type: 'success',
+        text1:t("loggedOut"),
+        text2:t("logoutMessage")
+      });
+      
       navigation.navigate('HomeTab', { screen: 'Home' });
     } catch (error) {
-      console.log('Error during logout:', error);
+      // console.log('Error during logout:', error);
     }
   };
 
@@ -39,6 +159,19 @@ const Account = () => {
 
   return (
     <View style={styles.container}>
+
+       {/* Profile Section */}
+       <TouchableOpacity style={styles.profileContainer} onPress={handlePickImage}>
+        {profileImage ? (
+          <Image source={{ uri: profileImage }} style={styles.profileImage} />
+        ) : (
+          <View style={styles.profilePlaceholder}>
+            <Ionicons name="person-outline" size={40} color="#aaa" />
+          </View>
+        )}
+        <Text style={styles.changePhotoText}>{t("changePhoto")}</Text>
+      </TouchableOpacity>
+
       <Text style={styles.header}>{t("header")}</Text>
 
       <View style={styles.cardContainer}>
@@ -67,6 +200,28 @@ const styles = StyleSheet.create({
     backgroundColor: '#f4f5f7',
     paddingHorizontal: 20,
     paddingTop: 60,
+  },
+  profileContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+  },
+  profilePlaceholder: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: '#ddd',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  changePhotoText: {
+    marginTop: 8,
+    fontSize: 14,
+    color: '#666',
   },
   header: {
     fontSize: 28,
