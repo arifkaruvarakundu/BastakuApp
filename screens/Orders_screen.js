@@ -140,7 +140,7 @@ const OrdersScreen = () => {
 
       <View style={styles.orderFooter}>
         <TouchableOpacity style={styles.trackButton}>
-          <Text style={styles.trackButtonText}>{t("track_campaign")}</Text>
+          <Text style={styles.trackButtonText}>{t("pay")}</Text>
         </TouchableOpacity>
       </View>
     </TouchableOpacity>

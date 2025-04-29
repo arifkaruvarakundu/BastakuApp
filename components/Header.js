@@ -14,15 +14,47 @@ import { useNavigation } from "@react-navigation/native";
 import API_BASE_URL from "../config";
 import LanguageSelector from "./Language_detector"
 import { useTranslation } from 'react-i18next';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSelector } from 'react-redux';
 
 const Header = () => {
   const navigation = useNavigation();
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState({ products: [], categories: [] });
+  const [notificationsCount, setNotificationsCount] = useState(0)
   
   const { t } = useTranslation('home');
   const {i18n} = useTranslation()
+
+  const isAuthenticated = useSelector((state)=> state.auth.isAuthenticated)
+
+  // Fetch unread notifications count
+  const fetchNotificationsCount = async () => {
+    try {
+      const token = await AsyncStorage.getItem("access_token");
+      const email = await AsyncStorage.getItem("email");
+
+      if (!email || !token) return;
+
+      const response = await axios.get(`${API_BASE_URL}/notifications/`, {
+        headers: {
+          "Content-Type": "application/json",
+          email: email,
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("notification response",response.data)
+      const unreadNotifications = response.data.filter(notification => !notification.is_read);
+      setNotificationsCount(unreadNotifications.length || 0);  
+    } catch (error) {
+      console.error("Error fetching notifications count:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchNotificationsCount();
+  }, []);
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
@@ -115,6 +147,19 @@ const Header = () => {
         <View style={styles.titleContainer}>
           <Text style={styles.title}>{t('BastaKU')}</Text>
         </View>
+
+        {/* Notification Icon */}
+        {isAuthenticated && (
+        <TouchableOpacity style={styles.iconContainer} onPress={() => navigation.navigate("AccountTab", {screen: "NotificationsScreen"})}>
+          <Feather name="bell" size={24} color="black" />
+          {notificationsCount > 0 && (
+            <View style={styles.notificationBadge}>
+              <Text style={styles.badgeText}>{notificationsCount}</Text>
+            </View>
+          )}
+        </TouchableOpacity>
+        )}
+
       </View>
 
       {/* Search Input */}
@@ -206,6 +251,23 @@ const styles = StyleSheet.create({
   suggestionItem: {
     fontSize: 15,
     color: "#444",
+  },
+
+  notificationBadge: {
+    position: "absolute",
+    top: -4,
+    right: -4,
+    backgroundColor: "red",
+    borderRadius: 10,
+    width: 20,
+    height: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  badgeText: {
+    color: "white",
+    fontSize: 12,
+    fontWeight: "bold",
   },
   
 });

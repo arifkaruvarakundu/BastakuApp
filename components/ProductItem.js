@@ -20,7 +20,7 @@ import Toast from 'react-native-toast-message';
 
 const { width } = Dimensions.get("window");
 
-const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR }) => {
+const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR, onCategorySelect }) => {
   const { i18n } = useTranslation();
   const { t } = useTranslation('shop');
   const [products, setProducts] = useState([]);
@@ -37,7 +37,8 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR }) =
   console.log("arabic categoryname:",categoryNameAR, categoryName)
 
   const currentLanguage = i18n.language;
-  const localizedCategoryName = currentLanguage === 'ar' ? categoryNameAR || categoryName : categoryName || categoryNameAR;
+
+  const localizedCategoryName = currentLanguage === 'ar' ? categoryNameAR  : categoryName ;
 
   const cartItems = useSelector((state) => state.cart.cartItems);
 
@@ -164,14 +165,21 @@ const ProductItem = ({ navigation, categoryId, categoryName, categoryNameAR }) =
   }, [categoryId, products]);
 
   const handleViewAll = () => {
-    setLoading(true); // Start loading
+    if (!products || products.length === 0) return; // Prevent action if products are empty
   
+    setLoading(true);
+  
+    setFilteredProducts(products); // Set immediately
+    setShowAll(true);
+  
+    if (typeof onCategorySelect === 'function') {
+      onCategorySelect(null, null); // Reset category selection
+    }
+  
+    // Short timeout just to simulate loading if needed
     setTimeout(() => {
-      const filtered = [...products];
-      setFilteredProducts(filtered);
-      setShowAll(true);
-      setLoading(false); // Stop loading after processing
-    }, 500); // Adjust delay as needed
+      setLoading(false);
+    }, 300);
   };
 
   const handleProductPress = (product) => {

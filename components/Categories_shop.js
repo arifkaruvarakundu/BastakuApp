@@ -57,6 +57,7 @@ const CategoriesShop = ({ navigation, fetchCategories, onCategorySelect, selecte
 
   const handleViewAll = () => {
     // Navigate to the featured sellers list screen
+    onCategorySelect(null, null, null);
     if (navigation) {
       navigation.navigate("AllCategories");
     }
@@ -65,7 +66,7 @@ const CategoriesShop = ({ navigation, fetchCategories, onCategorySelect, selecte
   const handleCategoryPress = (category) => {
     // Navigate to the seller detail screen
     if (onCategorySelect) {
-      onCategorySelect(category.id, category.name)
+      onCategorySelect(category.id, category.name, category.name_ar)
       
     }
   };

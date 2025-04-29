@@ -12,12 +12,15 @@ import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { Ionicons } from '@expo/vector-icons'; // or react-native-vector-icons
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import API_BASE_URL from '../config'
+import API_BASE_URL from '../config';
+import { useNavigation } from '@react-navigation/native';
 
 const NotificationScreen = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+
+  const navigation = useNavigation();
 
   const { t } = useTranslation('accounts_others'); // Assuming you want notifications translation
 
@@ -49,13 +52,18 @@ const NotificationScreen = () => {
     fetchNotifications();
   }, []);
 
+    const handleNotificationClick = (notification) => {
+      // Here you can use navigation to go to OrdersScreen or another screen
+      navigation.navigate('OrdersScreen'); // This will navigate to OrdersScreen
+    };
+
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     fetchNotifications();
   }, []);
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.card} activeOpacity={0.8}>
+    <TouchableOpacity style={styles.card} activeOpacity={0.8} onPress={() => handleNotificationClick(item)}>
       <View style={styles.iconContainer}>
         <Ionicons name="notifications" size={24} color="#0aad0a" />
       </View>

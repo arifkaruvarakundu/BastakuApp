@@ -88,7 +88,7 @@ export const AccountStackNavigator = () =>{
       <Stack.Screen
         name = "NotificationsScreen"
         component = {NotificationScreen}
-        options={() => ({ title: t('notifications') })}
+        options={() => ({ title: t('notifications'), headerShown: true })}
       />
     </ Stack.Navigator>
   );

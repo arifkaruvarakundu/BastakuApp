@@ -10,21 +10,29 @@ import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
 import * as ImagePicker from 'expo-image-picker';
 import API_BASE_URL from '../config';
-
+import axios from 'axios';
 
 const Account = () => {
   const [profileImage, setProfileImage] = useState(null);
+  const [orderCount, setOrderCount] = useState(0);
+  const [campaignCount, setCampaignCount] = useState(0);
+  const [notificationCount, setNotificationCount] = useState(0);
 
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
-  
+
   const { t } = useTranslation('Account'); // Use the 'Account' namespace for translations
   const {i18n} = useTranslation(); // Use the 'Account' namespace for translations
 
   useEffect(() => {
     fetchUserProfile();
   }, []);
+
+  useEffect(() => {
+    fetchCounts();
+  }, []);
+  
 
   const fetchUserProfile = async () => {
     const token = await AsyncStorage.getItem('access_token');
@@ -89,7 +97,6 @@ const Account = () => {
     );
   };
   
-
   const uploadProfileImage = async (imageUri) => {
     const token = await AsyncStorage.getItem('access_token');
   
@@ -128,8 +135,43 @@ const Account = () => {
       console.error('Error uploading profile image:', error);
     }
   };
-  
 
+  const fetchCounts = async () => {
+    const token = await AsyncStorage.getItem('access_token');
+    const email = await AsyncStorage.getItem('email');
+  
+    try {
+      const [ordersResponse, campaignsResponse, notificationsResponse] = await Promise.all([
+        axios.get(`${API_BASE_URL}/user_orders/`, {
+          headers: { 'Authorization': `Bearer ${token}` },
+        }),
+        axios.get(`${API_BASE_URL}/user_campaigns/`, {
+          headers: { 'Authorization': `Bearer ${token}` },
+        }),
+        axios.get(`${API_BASE_URL}/notifications/`, {
+          headers: {
+            'Content-Type': 'application/json',
+            email: email,
+            Authorization: `Bearer ${token}`,
+          },
+        }),
+      ]);
+  
+      const ordersData = ordersResponse.data;
+      const campaignsData =  campaignsResponse.data;
+      const notificationsData = notificationsResponse.data;
+      const unreadNotifications = notificationsData.filter((notification) => !notification.is_read);
+      const totalOrdersCount = (ordersData.orders.length || 0) + (ordersData.campaign_orders.length || 0);
+  
+      setOrderCount(totalOrdersCount || 0);
+      setCampaignCount(campaignsData.length || 0);
+      setNotificationCount(unreadNotifications.length || 0);
+  
+    } catch (error) {
+      console.error('Error fetching counts:', error);
+    }
+  };
+  
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem('access_token');
@@ -152,9 +194,9 @@ const Account = () => {
 
   const options = [
     { icon: 'location-outline', label: 'Address', onPress: () => navigation.navigate('Address') },
-    { icon: 'receipt-outline', label: 'Orders', onPress: () => navigation.navigate('OrdersScreen') },
-    { icon: 'megaphone-outline', label: 'Campaigns', onPress: () => navigation.navigate('CampaignsScreen') },
-    { icon: 'notifications-outline', label: 'Notifications', onPress: () => navigation.navigate('NotificationsScreen') },
+    { icon: 'receipt-outline', label: 'Orders', onPress: () => navigation.navigate('OrdersScreen'), count: orderCount },
+    { icon: 'megaphone-outline', label: 'Campaigns', onPress: () => navigation.navigate('CampaignsScreen'), count: campaignCount },
+    { icon: 'notifications-outline', label: 'Notifications', onPress: () => navigation.navigate('NotificationsScreen'), count: notificationCount },
   ];
 
   return (
@@ -179,6 +221,13 @@ const Account = () => {
           <TouchableOpacity key={index} style={styles.optionCard} onPress={item.onPress}>
             <Ionicons name={item.icon} size={24} color="#555" />
             <Text style={styles.optionText}>{t(`${item.label}`)}</Text>
+
+            {item.count > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{item.count}</Text>
+              </View>
+            )}
+
             <Ionicons name="chevron-forward" size={20} color="#999" />
           </TouchableOpacity>
         ))}

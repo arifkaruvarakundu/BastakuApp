@@ -15,6 +15,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { updateCartItemQuantity, addToCart } from '../redux/cartSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message';
 
 const ProductDetailView = ({ route, navigation }) => {
   const { productId, quantity: initialQuantity } = route.params;
@@ -81,7 +82,7 @@ const ProductDetailView = ({ route, navigation }) => {
   const handleAddToCart = () => {
     console.log("cartItems:@@@",cartItems)
     if (!selectedVariant || !selectedVariant.id || !fetchedProduct?.product_name) {
-      Alert.alert("Error", "Invalid product selection.");
+      Alert.alert(t("error_invalid_product"));
       return;
     }
 
@@ -109,10 +110,14 @@ const ProductDetailView = ({ route, navigation }) => {
   
     try {
       dispatch(addToCart(itemToAdd));
-      Alert.alert("Success", "Item added to cart!");
+      // Alert.alert("Success", "Item added to cart!");
+      Toast.show({
+        type: 'success',
+        text1: t("success_item_added"),
+      });
     } catch (error) {
       console.error("Error adding to cart:", error);
-      Alert.alert("Error", "Failed to add item to cart.");
+      Alert.alert(t("error_add_failed"));
     }
   };
 

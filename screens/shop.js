@@ -4,30 +4,35 @@ import CategoriesShop from '../components/Categories_shop';
 import ProductItem from '../components/ProductItem';
 import Header from '../components/Header';
 import {useRoute} from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 // import { useNavigation } from '@react-navigation/native';
-
 
 const Shop = ({navigation}) => {
 
     // const navigation = useNavigation();
     const route = useRoute()
-    const { categoryId, categoryName } = route.params || {};
+    const { categoryId, categoryName, categoryNameAR } = route.params || {};
     const [selectedCategoryId, setSelectedCategoryId] = useState(categoryId || null);
     const [selectedCategoryName, setSelectedCategoryName] = useState(categoryName || null)
+    const [selectedCategoryNameAR, setSelectedCategoryNameAR] = useState(categoryNameAR || null)
     const [categories, setCategories] = useState([]);
+
+    const { i18n } = useTranslation();
 
     const categoriesFlatListRef = useRef(null); // <--- NEW
 
     useEffect(() => {
-      if (categoryId || categoryName) {
+      if (categoryId || categoryName || categoryNameAR) {
         // console.log("Received in Shop page:", categoryId, categoryName);
         setSelectedCategoryId(categoryId);
         setSelectedCategoryName(categoryName);
+        setSelectedCategoryNameAR(categoryNameAR)
+        
     
         // Reset params (optional)
-        navigation.setParams({ categoryId: null, categoryName: null });
+        navigation.setParams({ categoryId: null, categoryName: null, categoryNameAR: null });
       }
-    }, [categoryId, categoryName]);
+    }, [categoryId, categoryName, categoryNameAR]);
 
     useEffect(() => {
       if (categoriesFlatListRef.current && selectedCategoryId && categories.length > 0) {
@@ -42,10 +47,16 @@ const Shop = ({navigation}) => {
       }
     }, [selectedCategoryId, categories]);
 
-    const handleCategorySelect = (categoryId, categoryName) => {
+    const handleCategorySelect = (categoryId, categoryName, categoryNameAR) => {
       setSelectedCategoryId(categoryId);
-      setSelectedCategoryName(categoryName);
-    };    
+      if (i18n.language === 'ar') {
+        setSelectedCategoryNameAR(categoryNameAR);
+        setSelectedCategoryName(null); // Optional: Clear English name if not used
+      } else {
+        setSelectedCategoryName(categoryName);
+        setSelectedCategoryNameAR(null); // Optional
+      }
+    };  
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
@@ -63,6 +74,7 @@ const Shop = ({navigation}) => {
             navigation = {navigation} 
             categoryId = {selectedCategoryId} 
             categoryName = {selectedCategoryName}
+            categoryNameAR = {selectedCategoryNameAR}
             onCategorySelect = {handleCategorySelect}
           />
       </View>

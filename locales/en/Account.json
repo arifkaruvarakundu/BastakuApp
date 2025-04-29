@@ -41,6 +41,7 @@
     "retry": "Retry",
     "track_order": "Track Order",
     "track_campaign": "Track Campaign",
+    "pay" : "Pay",
     "total": "Total",
     "order": "Order",
     "campaign_order": "Campaign Order",

@@ -17,6 +17,7 @@ import { useNavigation } from '@react-navigation/native';
 import API_BASE_URL from '../config';
 import { createSelector } from 'reselect';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { generateInvoice } from '../components/Generate_InvoicePdf';
 
 const ShopCheckoutScreen = () => {
   const [loading, setLoading] = useState(true);
@@ -145,34 +146,34 @@ const ShopCheckoutScreen = () => {
       {/* Cart Items */}
       <Text style={styles.sectionHeader}>Order Details</Text>
       {cartItems.map((item, idx) => {
-  const quantity = item.quantity;
-  const price = parseFloat(item?.variant?.price || item?.price || 0);
-  const subtotal = (quantity * price).toFixed(2);
-  const brand = item?.variant?.brand || item?.brand || 'No Brand';
+    const quantity = item.quantity;
+    const price = parseFloat(item?.variant?.price || item?.price || 0);
+    const subtotal = (quantity * price).toFixed(2);
+    const brand = item?.variant?.brand || item?.brand || 'No Brand';
 
-  return (
-    <View key={idx} style={styles.cartItem}>
-      <Image
-        source={{
-          uri:
-            item?.variant?.variant_images?.[0]?.image_url ||
-            item?.image ||
-            'https://via.placeholder.com/150',
-        }}
-        style={styles.productImage}
-      />
-      <View style={{ flex: 1, marginLeft: 10 }}>
-        <Text style={styles.productTitle}>{brand}</Text>
-        
-        <View style={styles.priceRow}>
-          <Text style={styles.priceDetail}>Qty: {quantity}</Text>
-          <Text style={styles.priceDetail}>x {price.toFixed(2)} KD</Text>
-          <Text style={styles.subtotal}>= {subtotal} KD</Text>
-        </View>
-      </View>
-    </View>
-  );
-})}
+      return (
+            <View key={idx} style={styles.cartItem}>
+              <Image
+                source={{
+                  uri:
+                    item?.variant?.variant_images?.[0]?.image_url ||
+                    item?.image ||
+                    'https://via.placeholder.com/150',
+                }}
+                style={styles.productImage}
+              />
+              <View style={{ flex: 1, marginLeft: 10 }}>
+                <Text style={styles.productTitle}>{brand}</Text>
+                
+                <View style={styles.priceRow}>
+                  <Text style={styles.priceDetail}>Qty: {quantity}</Text>
+                  <Text style={styles.priceDetail}>x {price.toFixed(2)} KD</Text>
+                  <Text style={styles.subtotal}>= {subtotal} KD</Text>
+                </View>
+              </View>
+            </View>
+          );
+        })}
 
       {/* Subtotal */}
       <View style={styles.totalBox}>
@@ -180,17 +181,21 @@ const ShopCheckoutScreen = () => {
         <Text style={styles.totalText}>{calculateSubtotal()} KD</Text>
       </View>
 
+      <TouchableOpacity style={[styles.button, { backgroundColor: '#007bff' }]} onPress={() => generateInvoice(cartItems, address, calculateSubtotal)}>
+        <Text style={styles.buttonText}>Download Invoice</Text>
+      </TouchableOpacity>
+
       {/* Place Order */}
       <TouchableOpacity style={styles.button} onPress={handlePlaceOrder}>
         <Text style={styles.buttonText}>Place Order</Text>
       </TouchableOpacity>
 
       <Modal
-  animationType="slide"
-  transparent={true}
-  visible={modalVisible}
-  onRequestClose={() => setModalVisible(false)}
->
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
   <View style={styles.modalOverlay}>
     <View style={styles.modalContainer}>
       <Text style={styles.modalHeader}>Update Address</Text>

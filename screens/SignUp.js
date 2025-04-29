@@ -93,15 +93,15 @@ const SignUp = () => {
       if (response.ok) {
         dispatch(setAuthenticated());
 
-        await AsyncStorage.setItem('access_token', JSON.stringify(data.token.access)); // Ensure token is stored as a string
-        await AsyncStorage.setItem('email', JSON.stringify(data.email)); // Ensure token is stored as a string
-        await AsyncStorage.setItem('user_type', JSON.stringify(data.user_type)); // Ensure user_type is stored as a string
+        await AsyncStorage.setItem('access_token', data.token.access); // Ensure token is stored as a string
+        await AsyncStorage.setItem('email', data.email); // Ensure token is stored as a string
+        await AsyncStorage.setItem('user_type', data.user_type); // Ensure user_type is stored as a string
 
         Toast.show({
           type: 'success',
           text1: t("successUp"),
         });
-        navigation.navigate('Home'); // Navigate to home after success
+        navigation.navigate('HomeTab', {screen: 'Home'}); // Navigate to home after success
       } else {
         Toast.show({
           type: 'error',
