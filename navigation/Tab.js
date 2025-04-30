@@ -29,12 +29,23 @@ export default function TabNavigator() {
       <Tab.Navigator
         screenOptions={{
           headerShown: false,
+          // tabBarStyle: {
+          //   backgroundColor: '#a8d5ba',
+          //   // borderTopLeftRadius: 20,
+          //   // borderTopRightRadius: 20,
+          //   height: 60,
+          //   paddingBottom: 5,
+          //   shadowColor: '#000',
+          //   shadowOffset: { width: 0, height: -1 },
+          //   shadowOpacity: 0.1,
+          //   shadowRadius: 4,
+          //   elevation: 5,
+          // },
           tabBarStyle: {
             backgroundColor: '#a8d5ba',
-            // borderTopLeftRadius: 20,
-            // borderTopRightRadius: 20,
-            height: 60,
-            paddingBottom: 5,
+            height: 70, // slightly increased height
+            paddingBottom: 20, // more space at the bottom
+            paddingTop: 5,
             shadowColor: '#000',
             shadowOffset: { width: 0, height: -1 },
             shadowOpacity: 0.1,

@@ -5,6 +5,7 @@ import { createSelector } from 'reselect';
 import { updateCartItemQuantity, removeFromCart } from '../redux/cartSlice';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const ShoppingCart = () => {
 
@@ -81,30 +82,32 @@ const ShoppingCart = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{t("title")}</Text>
-      {cartItems.length === 0 ? (
-        <Text style={styles.emptyText}>{t("empty")}</Text>
-      ) : (
-        <>
-          <FlatList
-            data={cartItems}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id.toString()}
-            contentContainerStyle={{ paddingBottom: 150 }}
-          />
-          <View style={styles.totalContainer}>
-            <View style={styles.totalTextContainer}>
-              <Text style={styles.totalText}>{t("total")}</Text>
-              <Text style={styles.totalAmount}>${calculateTotal()}</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f0f2f5' }}>
+      <View style={styles.container}>
+        <Text style={styles.title}>{t("title")}</Text>
+        {cartItems.length === 0 ? (
+          <Text style={styles.emptyText}>{t("empty")}</Text>
+        ) : (
+          <>
+            <FlatList
+              data={cartItems}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id.toString()}
+              contentContainerStyle={{ paddingBottom: 150 }}
+            />
+            <View style={styles.totalContainer}>
+              <View style={styles.totalTextContainer}>
+                <Text style={styles.totalText}>{t("total")}</Text>
+                <Text style={styles.totalAmount}>${calculateTotal()}</Text>
+              </View>
+              <TouchableOpacity style={styles.checkoutButton} onPress={handleCheckout}>
+                <Text style={styles.checkoutButtonText}>{t("checkout")}</Text>
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity style={styles.checkoutButton} onPress={handleCheckout}>
-              <Text style={styles.checkoutButtonText}>{t("checkout")}</Text>
-            </TouchableOpacity>
-          </View>
-        </>
-      )}
-    </View>
+          </>
+        )}
+      </View>
+    </SafeAreaView>
   );
 };
 

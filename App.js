@@ -8,15 +8,18 @@ import { PersistGate } from 'redux-persist/integration/react';
 import store, { persistor } from './redux/store';
 import TabNavigator from './navigation/Tab';
 import Toast from 'react-native-toast-message';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default function App() {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <NavigationContainer>
-        <TabNavigator />
-        <Toast />
-        </NavigationContainer>
+        <SafeAreaProvider>
+          <NavigationContainer>
+            <TabNavigator />
+              <Toast />
+          </NavigationContainer>
+        </SafeAreaProvider>
       </PersistGate>
     </Provider>
   );
